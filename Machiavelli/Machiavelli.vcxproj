@@ -154,7 +154,6 @@
     <ClInclude Include="throw.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Machiavelli.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Socket.cpp" />
