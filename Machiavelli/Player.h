@@ -1,13 +1,13 @@
 //
-//  Player.hpp
+//  Player.h
 //  socketexample
 //
 //  Created by Bob Polis on 23-11-15.
 //  Copyright © 2015 Avans Hogeschool, 's-Hertogenbosch. All rights reserved.
 //
 
-#ifndef Player_hpp
-#define Player_hpp
+#ifndef Player_h
+#define Player_h
 
 #include <string>
 
@@ -23,4 +23,4 @@ private:
 	std::string name;
 };
 
-#endif /* Player_hpp */
+#endif /* Player_h */
