@@ -19,6 +19,18 @@
     <Filter Include="Source Files\game">
       <UniqueIdentifier>{f944e934-f6eb-4cf4-bf5b-783054022f18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Card">
+      <UniqueIdentifier>{d26b45ef-c55e-4aaa-800a-d2abf1d5fc72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Card">
+      <UniqueIdentifier>{24221d81-53b7-4676-97b6-6db284dd57cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Character">
+      <UniqueIdentifier>{fb911b9b-2ed4-444f-a893-7c9bb7b2b309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Character">
+      <UniqueIdentifier>{4997c70a-5844-4e28-bc2a-52dd42517cd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -48,6 +60,12 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Card.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="StandardCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -67,6 +85,12 @@
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Card.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardCard.cpp">
+      <Filter>Source Files\Card</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
