@@ -18,19 +18,20 @@ using namespace std;
 #include "Sync_queue.h"
 #include "ClientCommand.h"
 #include "Player.h"
+#include "Game.h"
 
 namespace machiavelli {
     const int tcp_port {1080};
     const string prompt {"machiavelli> "};
 }
 
-static Sync_queue<ClientCommand> queue;
+static Sync_queue<ClientCommand> customQueue;
 
 void consume_command() // runs in its own thread
 {
     try {
         while (true) {
-			ClientCommand command {queue.get()}; // will block here unless there are still command objects in the queue
+			ClientCommand command {customQueue.get()}; // will block here unless there are still command objects in the queue
 			shared_ptr<Socket> client {command.get_client()};
 			shared_ptr<Player> player {command.get_player()};
 			try {
@@ -75,7 +76,7 @@ void handle_client(shared_ptr<Socket> client) // this function runs in a separat
 				}
 
                 ClientCommand command {cmd, client, player};
-                queue.put(command);
+				customQueue.put(command);
 
             } catch (const exception& ex) {
 				cerr << "*** exception in client handler thread for player " << player->get_name() << ": " << ex.what() << '\n';
@@ -105,6 +106,9 @@ int main(int argc, const char * argv[])
     
 	// create a server socket
 	ServerSocket server {machiavelli::tcp_port};
+
+	//game setup test
+	Game* game = new Game();
 	
 	while (true) {
 		try {
