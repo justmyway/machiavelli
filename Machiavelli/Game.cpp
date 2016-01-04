@@ -44,6 +44,9 @@ Game::Game() :
 	//get cards
 	PrepareCards();
 
+	//gold
+	GoldReserve = 30;
+
 	/*
 	ALREADY BUILD
 

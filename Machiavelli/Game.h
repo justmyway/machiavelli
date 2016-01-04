@@ -30,6 +30,7 @@ public:
 private:
 	std::unique_ptr<FileReader> file_reader;
 
+	int GoldReserve;
 	std::vector<std::shared_ptr<Player>> players;
 	std::queue<std::unique_ptr<Card>> deck;
 	std::vector<std::unique_ptr<Card>> discard_deck;
