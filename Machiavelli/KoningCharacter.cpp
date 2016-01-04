@@ -7,12 +7,6 @@ std::unique_ptr<Character> KoningCharacter::Create(const std::string name, int o
 	return std::move(character);
 }
 
-Character::CharacterColor KoningCharacter::Color()
-{
-	return GEEL;
-}
-
-
 KoningCharacter::~KoningCharacter()
 {
 }

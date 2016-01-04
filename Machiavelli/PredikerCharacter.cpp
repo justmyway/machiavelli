@@ -7,12 +7,6 @@ std::unique_ptr<Character> PredikerCharacter::Create(const std::string name, int
 	return std::move(character);
 }
 
-Character::CharacterColor PredikerCharacter::Color()
-{
-	return BLAUW;
-}
-
-
 PredikerCharacter::~PredikerCharacter()
 {
 }

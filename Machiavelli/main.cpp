@@ -18,7 +18,7 @@ using namespace std;
 #include "Sync_queue.h"
 #include "ClientCommand.h"
 #include "Player.h"
-#include "Game.h"
+#include "GameDivider.h"
 
 namespace machiavelli {
     const int tcp_port {1080};
@@ -29,6 +29,8 @@ static Sync_queue<ClientCommand> customQueue;
 
 void consume_command() // runs in its own thread
 {
+	unique_ptr<GameDivider> games(new GameDivider);
+
     try {
         while (true) {
 			ClientCommand command {customQueue.get()}; // will block here unless there are still command objects in the queue
@@ -36,7 +38,10 @@ void consume_command() // runs in its own thread
 			shared_ptr<Player> player {command.get_player()};
 			try {
 				// TODO handle command here
-				*client << player->get_name() << ", you wrote: '" << command.get_cmd() << "', but I'll ignore that for now.\r\n" << machiavelli::prompt;
+				//*client << player->get_name() << ", you wrote: '" << command.get_cmd() << "', but I'll ignore that for now.\r\n" << machiavelli::prompt;
+				auto cmd = std::make_shared<ClientCommand>(command);
+				games->PassCommand(cmd);
+
 			} catch (const exception& ex) {
 				cerr << "*** exception in consumer thread for player " << player->get_name() << ": " << ex.what() << '\n';
 				if (client->is_open()) {
@@ -61,8 +66,12 @@ void handle_client(shared_ptr<Socket> client) // this function runs in a separat
 		client->write("What's your name?\r\n");
         client->write(machiavelli::prompt);
 		string name {client->readline()};
-		shared_ptr<Player> player {new Player {name}};
+		shared_ptr<Player> player {new Player {name, client}};
 		*client << "Welcome, " << name << ", have fun playing our game!\r\n" << machiavelli::prompt;
+		
+		//Asigning to a game
+		ClientCommand command{ "I would love to play a game!", client, player };
+		customQueue.put(command);
 
         while (true) { // game loop
             try {
@@ -106,9 +115,6 @@ int main(int argc, const char * argv[])
     
 	// create a server socket
 	ServerSocket server {machiavelli::tcp_port};
-
-	//game setup test
-	Game* game = new Game();
 	
 	while (true) {
 		try {

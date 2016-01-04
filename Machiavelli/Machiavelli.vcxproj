@@ -152,6 +152,7 @@
     <ClInclude Include="CondottiereCharacter.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameDivider.h" />
     <ClInclude Include="HofDerWonderenCard.h" />
     <ClInclude Include="KerkerCard.h" />
     <ClInclude Include="KerkhofCard.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="CondottiereCharacter.cpp" />
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameDivider.cpp" />
     <ClCompile Include="HofDerWonderenCard.cpp" />
     <ClCompile Include="KerkerCard.cpp" />
     <ClCompile Include="KerkhofCard.cpp" />

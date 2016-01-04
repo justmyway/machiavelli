@@ -7,12 +7,6 @@ std::unique_ptr<Character> CondottiereCharacter::Create(const std::string name, 
 	return std::move(character);
 }
 
-Character::CharacterColor CondottiereCharacter::Color()
-{
-	return ROOD;
-}
-
-
 CondottiereCharacter::~CondottiereCharacter()
 {
 }

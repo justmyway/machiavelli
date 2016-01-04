@@ -17,9 +17,12 @@
 #include "MagiersCard.h"
 #include "PrestigieusGebouwCard.h"
 
+#include "ClientCommand.h"
+
 #include <iostream>
 #include <exception>
 #include <iostream>
+#include <algorithm>
 
 Game::Game() :
 	file_reader(new FileReader())
@@ -40,6 +43,15 @@ Game::Game() :
 
 	//get cards
 	PrepareCards();
+
+	/*
+	ALREADY BUILD
+
+	Card.Points();
+		returns the point for the card player->field->Card.Points()
+	
+	*/
+	std::cerr << "new game created. \n";
 }
 
 
@@ -83,12 +95,12 @@ void Game::PrepareCharacters()
 	}
 
 	//check
-	
-	/*for (auto const& i : characterset) {
+	/*
+	for (auto const& i : characterset) {
 		std::cout << i->Name() << " - " << i->Color() << std::endl;
-	};*/
+	};
 	std::cout << "All " << characterset.size() << " characters have been made. \n";
-	
+	*/
 	//end check
 }
 
@@ -132,10 +144,39 @@ void Game::PrepareCards()
 	}
 
 	//check
-	
+	/*
 	std::cout << "All " << deck.size() << " cards have been made. \n";
-	
+	*/
 	//end check
+}
+
+bool Game::Particatate(std::shared_ptr<Player> player)
+{
+	if (players.size() > 1) 
+		throw std::runtime_error("Trying to put more than 2 Players in a game. \r\n '" + player->get_name() + "' can't join!");
+	
+	players.push_back(player);
+
+	return players.size() == 2;
+}
+
+void Game::Start()
+{
+	std::cerr << "game started. \n";
+
+	for (auto &i : players) {
+		i->write("De game gaat beginnen! \r\n");
+	}
+}
+
+bool Game::Execute(std::shared_ptr<ClientCommand> command)
+{
+	if(std::find(players.begin(), players.end(), command->get_player()) == players.end())
+		return false;
+
+	//todoexceute command
+
+	return true;
 }
 
 Game::~Game()

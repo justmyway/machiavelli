@@ -7,12 +7,6 @@ std::unique_ptr<Character> KoopmanCharacter::Create(const std::string name, int 
 	return std::move(character);
 }
 
-Character::CharacterColor KoopmanCharacter::Color()
-{
-	return GROEN;
-}
-
-
 KoopmanCharacter::~KoopmanCharacter()
 {
 }

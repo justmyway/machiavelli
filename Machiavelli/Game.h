@@ -6,21 +6,31 @@
 #include "FileReader.h"
 #include "Card.h"
 #include "Character.h"
+#include "Player.h"
 
+class ClientCommand;
 
 class Game
 {
 public:
 	Game();
 
+	//setup
 	void FillDeckMap();
 	void PrepareCharacters();
 	void PrepareCards();
+	bool Particatate(std::shared_ptr<Player> player);
+	void Start();
+
+	//during game
+	std::vector<std::shared_ptr<Player>> Players() { return players; };
+	bool Execute(std::shared_ptr<ClientCommand> command);
 
 	~Game();
 private:
 	std::unique_ptr<FileReader> file_reader;
 
+	std::vector<std::shared_ptr<Player>> players;
 	std::queue<std::unique_ptr<Card>> deck;
 	std::vector<std::unique_ptr<Card>> discard_deck;
 	std::map<std::string, std::unique_ptr<Card>> deck_map;
