@@ -123,6 +123,9 @@
     <ClInclude Include="GameDivider.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
+    <ClInclude Include="BouwmeesterCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -199,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="GameDivider.cpp">
       <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="BouwmeesterCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

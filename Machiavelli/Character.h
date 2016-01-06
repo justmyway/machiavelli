@@ -21,7 +21,10 @@ public:
 
 	const std::string Name() { return name; };
 	const int Order() { return order; };
-	virtual CharacterColor Color() = 0;
+	CharacterColor Color() { return NONE; };
+
+	//Round
+	int maxToBuildBuildings(int amount) { return amount; };
 
 	~Character();
 private:

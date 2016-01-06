@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BibliotheekCard.h" />
+    <ClInclude Include="BouwmeesterCharacter.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="ClientCommand.h" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BibliotheekCard.cpp" />
+    <ClCompile Include="BouwmeesterCharacter.cpp" />
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="CondottiereCharacter.cpp" />

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "CondottiereCharacter.h"
 
 std::unique_ptr<Character> CondottiereCharacter::Create(const std::string name, int order)

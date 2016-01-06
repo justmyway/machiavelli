@@ -2,6 +2,7 @@
 #define Player_h
 
 #include "Card.h"
+#include "Character.h"
 
 #include <string>
 #include <vector>
@@ -27,8 +28,10 @@ public:
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
 
-	//Gold
+	//Round
 	int Deposit() { return stash; };
+	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
+
 
 	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
 	
@@ -43,6 +46,7 @@ private:
 
 	std::vector<std::unique_ptr<Card>> buildings;
 	std::vector<std::unique_ptr<Card>> cards;
+	std::vector<std::unique_ptr<Character>> character_cards;
 };
 
 #endif /* Player_h */

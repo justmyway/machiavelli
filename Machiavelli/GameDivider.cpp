@@ -6,10 +6,24 @@
 
 GameDivider::GameDivider()
 {
+	//Help commands
+	help_commands.push_back("'overzicht'           Laat zien wat er op dit moment in het spel aanwezig is.");
+	help_commands.push_back("'bouw <nummer>'       Plaats een gebouw op het speelveld. De nummers corresponderen met nummers voor de handkaarten.");
+	help_commands.push_back("'vermoord <karakter>' Karakter kan een van de volgende zijn: Dief, Magier, Koning, Prediker, Koopman, Bouwmeester of Condottiere."); 
+	help_commands.push_back("'besteel <karakter>'  Karakter kan een van de volgende zijn: Magier, Koning, Prediker, Koopman, Bouwmeester of Condottiere mist deze niet vermoord is)");
+	help_commands.push_back("'ruil <optie>'        ruilt al jouw eigen kaarten met de tegenstander of de voorraad op het bord.");
+	help_commands.push_back("'vernietig <nummer>'  Vernietig een gebouw van de tegenstander. De nummers corresponderen met de nummers voor de gebouwen van de tegenstander.");
+	help_commands.push_back("'chat <tekst>'        Om te chatten typ chat gevolgd door hetgeen wat je wil zeggen");
 }
 
 void GameDivider::PassCommand(std::shared_ptr<ClientCommand> command)
 {
+	//help command
+	if (command->get_cmd().compare("?") == 0 || command->get_cmd().compare("help") == 0) {
+		HelpCommand(command);
+		return;
+	}
+
 	//player already playing?
 	if (std::find(active_players.begin(), active_players.end(), command->get_player()) != active_players.end()) {
 		GetCommandToCorrectGame(command);
@@ -24,6 +38,31 @@ void GameDivider::PassCommand(std::shared_ptr<ClientCommand> command)
 
 GameDivider::~GameDivider()
 {
+}
+
+void GameDivider::HelpCommand(std::shared_ptr<ClientCommand> command)
+{
+	std::shared_ptr<Socket> socket = command->get_client();
+
+	WriteToClient(socket, "\r==================================================================================================================================================================");
+	WriteToClient(socket, "| Commando's die je kunt uitvoeren:\r|\n");
+
+	for (auto &i : help_commands) {
+		WriteToClient(socket,"| " + i);
+	}
+
+	WriteToClient(socket, "==================================================================================================================================================================");
+	WriteToClientInput(socket);
+}
+
+void GameDivider::WriteToClient(std::shared_ptr<Socket> socket, const std::string &value)
+{
+	socket->write(value + "\r\n");
+}
+
+void GameDivider::WriteToClientInput(std::shared_ptr<Socket> socket)
+{
+	socket->write("machiavelli> ");
 }
 
 void GameDivider::JoinNewGame(std::shared_ptr<ClientCommand> command)

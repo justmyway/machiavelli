@@ -1,5 +1,6 @@
 #include "Game.h"
 
+#include "BouwmeesterCharacter.h"
 #include "StandardCharacter.h"
 #include "CondottiereCharacter.h"
 #include "KoningCharacter.h"
@@ -18,16 +19,31 @@
 #include "PrestigieusGebouwCard.h"
 
 #include "ClientCommand.h"
+#include "Socket.h"
 
 #include <iostream>
 #include <exception>
 #include <iostream>
 #include <algorithm>
+#include <sstream>
+#include <windows.h>
 
 Game::Game() :
 	file_reader(new FileReader())
 {
+	//commands
+	valid_commands = {
+		"overzicht",
+		"bouw",
+		"vermoord",
+		"besteel",
+		"ruil",
+		"vernietig",
+		"chat"
+	};
+
 	//fill character map
+	character_map["Bouwmeester"]	= BouwmeesterCharacter::Create("Bouwmeester", 7);
 	character_map["Condottiere"]	= CondottiereCharacter::Create("Condottiere", 8);
 	character_map["Koning"]			= KoningCharacter::Create("Koning", 4);
 	character_map["Koopman"]		= KoopmanCharacter::Create("Koopman", 6);
@@ -35,8 +51,6 @@ Game::Game() :
 
 	//fill deck map
 	FillDeckMap();
-	
-
 
 	//get characters
 	PrepareCharacters();
@@ -170,18 +184,102 @@ void Game::Start()
 	for (auto &i : players) {
 		i->write("De game gaat beginnen! \r\n");
 	}
+
+	started = true;
 }
 
 bool Game::Execute(std::shared_ptr<ClientCommand> command)
 {
+	//command by one of these players?
 	if(std::find(players.begin(), players.end(), command->get_player()) == players.end())
 		return false;
+	
+	std::stringstream stream(command->get_cmd());
+	std::string cmd;
+	stream >> cmd;
 
-	//todoexceute command
+	//check valid commands
+	if (std::find(valid_commands.begin(), valid_commands.end(), cmd) == valid_commands.end()) {
+		InvalidCommand(command, "Dit commando word niet herkent!");
+		return true;
+	}
+
+	//check chat
+	if (cmd.compare("chat") == 0) {
+		std::pair<std::string, std::string> line = std::make_pair(command->get_player()->get_name(), command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		chat_history.push_back(line);
+		WriteChatLine(line);
+		return true;
+	}
+
+	if (!started) {
+		InvalidCommand(command, "Tja... niet dat het spel al is begonnen of zo...");
+		return true;
+	}
+	
+
+	//check players turn
+
+
+	//exceute command
 
 	return true;
 }
 
+void Game::Round(std::shared_ptr<ClientCommand> command)
+{
+	buildings_build = 0;
+}
+
+int Game::maxToBuildBuildings(int amount)
+{
+	int total = 1;
+
+	std::vector<std::unique_ptr<Character>> &characters = current_player->Characters();
+
+	for (auto &i : characters) {
+		total = i->maxToBuildBuildings(total);
+	}
+
+	return total;
+}
+
 Game::~Game()
 {
+}
+
+void Game::InvalidCommand(std::shared_ptr<ClientCommand> command, std::string value)
+{
+	HANDLE  hConsole;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	int col = 5;
+
+	FlushConsoleInputBuffer(hConsole);
+	SetConsoleTextAttribute(hConsole, col);
+
+	/*ClientCommand *cmd = command.get();
+
+	Socket *out = cmd->get_client();
+
+	out << value;*/
+
+	SetConsoleTextAttribute(hConsole, 15);
+}
+
+void Game::WriteChatLine(std::pair<std::string, std::string> line)
+{
+	std::string finished_line = line.first + " >> " + line.second +"\r\n";
+
+	HANDLE  hConsole;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	int col = 10;
+
+	FlushConsoleInputBuffer(hConsole);
+	SetConsoleTextAttribute(hConsole, col);
+
+	for (auto &i : players) {
+		i->write(finished_line);
+	}
+
+	SetConsoleTextAttribute(hConsole, 15);
 }
