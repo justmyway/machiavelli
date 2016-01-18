@@ -182,6 +182,7 @@ void Game::Start()
 	std::cerr << "game started. \n";
 
 	for (auto &i : players) {
+		ClearScreen(i);
 		i->write("De game gaat beginnen! \r\n");
 	}
 
@@ -250,20 +251,10 @@ Game::~Game()
 
 void Game::InvalidCommand(std::shared_ptr<ClientCommand> command, std::string value)
 {
-	HANDLE  hConsole;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	int col = 5;
+	std::shared_ptr<Socket> out = command->get_client();
 
-	FlushConsoleInputBuffer(hConsole);
-	SetConsoleTextAttribute(hConsole, col);
-
-	/*ClientCommand *cmd = command.get();
-
-	Socket *out = cmd->get_client();
-
-	out << value;*/
-
-	SetConsoleTextAttribute(hConsole, 15);
+	out->write("\33[31;40m" + value + "\r\nMachiavelli> ");
+	out->write("\33[30;40m\33g");
 }
 
 void Game::WriteChatLine(std::pair<std::string, std::string> line)
@@ -282,4 +273,9 @@ void Game::WriteChatLine(std::pair<std::string, std::string> line)
 	}
 
 	SetConsoleTextAttribute(hConsole, 15);
+}
+
+void Game::ClearScreen(std::shared_ptr<Player> player)
+{
+	player->write("\33[2J");
 }
