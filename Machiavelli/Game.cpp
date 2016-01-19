@@ -39,6 +39,7 @@ Game::Game() :
 		"besteel",
 		"ruil",
 		"vernietig",
+		"next",
 		"chat"
 	};
 
