@@ -220,7 +220,45 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	
 
 	//check players turn
+	for (auto &i : players) {
+		if(i == current_player)
+		{
+			//player is aan de beurt
 
+			//ga ronde opzetten voor 2 spelers
+				//schud kaarten
+				//bekijk en leg bovenste af
+				//Kies 1 en geef 6 aan andere speler
+				//andere speler kiest 1 en legt 1 af
+				//Koning kiest 1 en legt 1 af
+				//speler 2 kiest 1 en legt laatste af
+			//als ronde opgezet is, gaan spelen
+				//Koning roept karakters op
+					//Alle karakters in een loopje, op volgorde
+				// karakter reageert 
+					// 2 goud pakken of kaarten trekken en gebouwen bouwen
+					//taak van characters uitwerken
+						//Moordenaar
+						//Dief
+						//Magier
+						//Koning
+						//Prediker
+						//koopman
+						//bouwmeester
+						//condotierre
+			
+			
+
+				
+
+			return true;
+		}
+		else
+		{
+			//player is niet aan de beurt.
+			return false;
+		}
+	}
 
 	//exceute command
 
