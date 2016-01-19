@@ -34,7 +34,7 @@ public:
 	void Fase1();
 	int Deposit() { return stash; };
 	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
-
+	void addCharacter(std::unique_ptr<Character> &Character);
 	bool Build(unsigned int buildingIndex);
 	
 	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };

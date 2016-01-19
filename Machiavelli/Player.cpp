@@ -107,3 +107,8 @@ bool Player::Build(unsigned int buildingIndex)
 	}
 	return false;
 }
+
+void Player::addCharacter(std::unique_ptr<Character>& Character)
+{
+	character_cards.push_back(Character);
+}

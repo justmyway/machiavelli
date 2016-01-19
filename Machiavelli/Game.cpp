@@ -62,6 +62,9 @@ Game::Game() :
 	//gold
 	GoldReserve = 30;
 
+	//cheatmode 
+	cheatMode = false;
+
 	/*
 	ALREADY BUILD
 
@@ -242,6 +245,87 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 			//als ronde opgezet is, gaan spelen
 				//Koning roept karakters op
 					//Alle karakters in een loopje, op volgorde
+						// karakter reageert 
+						// 2 goud pakken of kaarten trekken en gebouwen bouwen
+					//taak van characters uitwerken
+						//Moordenaar
+						//Dief
+						//Magier
+						//Koning
+						//Prediker
+						//koopman
+						//bouwmeester
+						//condotierre
+			//ronde afgelopen
+
+			if(cheatMode == false)
+			{
+				//ga ronde opzetten voor 2 spelers
+				//schud kaarten
+				auto shuffledCharacters(characterset);
+
+				//bekijk en leg bovenste af
+				i->write("Te kiezen kaarten:");
+				for (auto &card : shuffledCharacters)
+				{
+					i->write(card->Name());
+				}
+				discard_characterset.push_back(shuffledCharacters.begin);
+				shuffledCharacters.erase(shuffledCharacters.begin);
+
+				//Kies 1 en geef 6 aan andere speler
+					//even static de eerste kiezen, input afhandelen komt later
+				auto chosenCharacter = shuffledCharacters.begin; //Moet nog dynamisch
+				i->addCharacter(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+				changePlayer();
+				//andere speler kiest 1 en legt 1 af
+				i->write("Te kiezen kaarten:");
+				for (auto &card : shuffledCharacters)
+				{
+					i->write(card->Name());
+				}
+				current_player->addCharacter(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+
+					//afleggen
+				discard_characterset.push_back(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+				changePlayer();
+
+				//Koning kiest 1 en legt 1 af
+				i->write("Te kiezen kaarten:");
+				for (auto &card : shuffledCharacters)
+				{
+					i->write(card->Name());
+				}
+				current_player->addCharacter(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+
+				//afleggen
+				discard_characterset.push_back(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+				changePlayer();
+
+				//speler 2 kiest 1 en legt laatste af
+				i->write("Te kiezen kaarten:");
+				for (auto &card : shuffledCharacters)
+				{
+					i->write(card->Name());
+				}
+				current_player->addCharacter(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+
+				//afleggen
+				discard_characterset.push_back(chosenCharacter);
+				shuffledCharacters.erase(chosenCharacter);
+				changePlayer();
+			}
+			
+			
+			//als ronde opgezet is, gaan spelen
+				//Koning roept karakters op
+					//Alle karakters in een loopje, op volgorde
 				// karakter reageert 
 					// 2 goud pakken of kaarten trekken en gebouwen bouwen
 					//taak van characters uitwerken
@@ -253,8 +337,9 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 						//koopman
 						//bouwmeester
 						//condotierre
+			//ronde afgelopen
 			
-			
+
 
 				
 
@@ -270,6 +355,18 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	//exceute command
 
 	return true;
+}
+
+void Game::changePlayer()
+{
+	if (current_player == players.begin)
+	{
+		current_player = players.end;
+	}
+	else
+	{
+		current_player = players.begin;
+	}
 }
 
 void Game::Round(std::shared_ptr<ClientCommand> command)

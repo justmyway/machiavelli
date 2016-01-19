@@ -58,7 +58,10 @@ private:
 	bool DeturmNextCharacter();
 	std::shared_ptr<Player> current_player;
 	bool character_action_played;
+	bool cheatMode;
 
 	//round functions
+	void changePlayer();
+	void discardcard(std::shared_ptr<Character> character);
 	void ClearScreen(std::shared_ptr<Player> player);
 };
