@@ -218,6 +218,12 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		InvalidCommand(command, "Tja... niet dat het spel al is begonnen of zo...");
 		return true;
 	}
+
+	//is next player, call next character
+	if (cmd.compare("next") == 0) {
+		while (DeturmNextCharacter())
+			;
+	}
 	
 
 	//check players turn
@@ -268,20 +274,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 
 void Game::Round(std::shared_ptr<ClientCommand> command)
 {
-	buildings_build = 0;
-}
 
-int Game::maxToBuildBuildings(int amount)
-{
-	int total = 1;
-
-	std::vector<std::unique_ptr<Character>> &characters = current_player->Characters();
-
-	for (auto &i : characters) {
-		total = i->maxToBuildBuildings(total);
-	}
-
-	return total;
 }
 
 Game::~Game()
@@ -312,6 +305,27 @@ void Game::WriteChatLine(std::pair<std::string, std::string> line)
 	}
 
 	SetConsoleTextAttribute(hConsole, 15);
+}
+
+bool Game::DeturmNextCharacter()
+{
+	if (order == 8) {
+		order = 1;
+	}
+	else {
+		order++;
+	}
+
+	for (auto &player : players) {
+		if (player->NewRound(order)) {
+
+			current_player = player;
+			current_player->Fase1();
+
+			return true;
+		}
+	}
+	return false;
 }
 
 void Game::ClearScreen(std::shared_ptr<Player> player)

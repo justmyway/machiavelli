@@ -13,6 +13,7 @@ GameDivider::GameDivider()
 	help_commands.push_back("'besteel <karakter>'  Karakter kan een van de volgende zijn: Magier, Koning, Prediker, Koopman, Bouwmeester of Condottiere mist deze niet vermoord is)");
 	help_commands.push_back("'ruil <optie>'        ruilt al jouw eigen kaarten met de tegenstander of de voorraad op het bord.");
 	help_commands.push_back("'vernietig <nummer>'  Vernietig een gebouw van de tegenstander. De nummers corresponderen met de nummers voor de gebouwen van de tegenstander.");
+	help_commands.push_back("'next'				   De beurt word aan de volgende speler overgedragen.");
 	help_commands.push_back("'chat <tekst>'        Om te chatten typ chat gevolgd door hetgeen wat je wil zeggen");
 }
 

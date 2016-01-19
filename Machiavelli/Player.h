@@ -19,6 +19,7 @@ public:
 	std::string get_name() const { return name; };
 	void set_name(const std::string& new_name) { name = new_name; };
 	void write(std::string value);
+	void writeError(std::string value);
 
 	//Who is king
 	void setStartPlayer(bool start) { startPlayer = start; };
@@ -29,10 +30,13 @@ public:
 	std::vector<std::string> PrintCards();
 
 	//Round
+	bool NewRound(int order);
+	void Fase1();
 	int Deposit() { return stash; };
 	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
 
-
+	bool Build(unsigned int buildingIndex);
+	
 	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
 	
 private:
@@ -43,6 +47,14 @@ private:
 	//game items
 	bool startPlayer;
 	int stash;
+
+	//Game Round
+	//end Game Round
+
+	//Character turn
+	int maxBuildingsToBuild;
+	std::unique_ptr<Character> current_character;
+	//end Character turn
 
 	std::vector<std::unique_ptr<Card>> buildings;
 	std::vector<std::unique_ptr<Card>> cards;

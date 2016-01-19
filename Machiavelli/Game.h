@@ -29,7 +29,6 @@ public:
 	void Round(std::shared_ptr<ClientCommand> command);
 
 	//variables
-	int maxToBuildBuildings(int amount);
 
 	~Game();
 private:
@@ -55,9 +54,10 @@ private:
 	std::vector<std::string> valid_commands;
 
 	//round varibale
+	int order;
+	bool DeturmNextCharacter();
 	std::shared_ptr<Player> current_player;
 	bool character_action_played;
-	int buildings_build;
 
 	//round functions
 	void ClearScreen(std::shared_ptr<Player> player);
