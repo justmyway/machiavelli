@@ -31,7 +31,7 @@ public:
 	//Round
 	int Deposit() { return stash; };
 	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
-
+	void addCharacter(std::unique_ptr<Character> &Character);
 
 	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
 	

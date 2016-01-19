@@ -49,3 +49,8 @@ std::vector<std::string> Player::PrintCards()
 
 	return CardInfo;
 }
+
+void Player::addCharacter(std::unique_ptr<Character>& Character)
+{
+	character_cards.push_back(Character);
+}
