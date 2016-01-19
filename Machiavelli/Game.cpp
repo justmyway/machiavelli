@@ -235,6 +235,37 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 			//als ronde opgezet is, gaan spelen
 				//Koning roept karakters op
 					//Alle karakters in een loopje, op volgorde
+						// karakter reageert 
+						// 2 goud pakken of kaarten trekken en gebouwen bouwen
+					//taak van characters uitwerken
+						//Moordenaar
+						//Dief
+						//Magier
+						//Koning
+						//Prediker
+						//koopman
+						//bouwmeester
+						//condotierre
+			//ronde afgelopen
+
+			//ga ronde opzetten voor 2 spelers
+				//schud kaarten
+			auto shuffledCharacters(characterset);
+
+				//bekijk en leg bovenste af
+			for(auto &card : shuffledCharacters)
+			{
+				i->write(card->Name());
+			}
+			shuffledCharacters.erase(shuffledCharacters.begin());
+			
+				//Kies 1 en geef 6 aan andere speler
+				//andere speler kiest 1 en legt 1 af
+				//Koning kiest 1 en legt 1 af
+				//speler 2 kiest 1 en legt laatste af
+			//als ronde opgezet is, gaan spelen
+				//Koning roept karakters op
+					//Alle karakters in een loopje, op volgorde
 				// karakter reageert 
 					// 2 goud pakken of kaarten trekken en gebouwen bouwen
 					//taak van characters uitwerken
@@ -246,8 +277,9 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 						//koopman
 						//bouwmeester
 						//condotierre
+			//ronde afgelopen
 			
-			
+
 
 				
 
