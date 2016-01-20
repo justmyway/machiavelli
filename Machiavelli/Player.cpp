@@ -76,6 +76,26 @@ void Player::Fase1()
 {
 }
 
+void Player::CollectCash()
+{
+	int collectGold = 2;
+
+	//collectGold += current_character->CollectCash(buildings);
+
+	write("You got " + std::to_string(collectGold) + " gold");
+}
+
+void Player::ChoseCards()
+{
+}
+
+int Player::BuildingsWithColor(CardColor color)
+{
+	int NumberOfBuildings = 0;
+	for () {
+	}
+}
+
 bool Player::Build(unsigned int buildingIndex)
 {
 	if (maxBuildingsToBuild != 0) {

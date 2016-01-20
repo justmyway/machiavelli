@@ -25,6 +25,7 @@ public:
 
 	//Round
 	int maxToBuildBuildings(int amount) { return amount; };
+	int CollectCash(std::shared_ptr<Player> player) { return 0; };
 
 	~Character();
 private:

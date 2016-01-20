@@ -25,19 +25,29 @@ public:
 	void setStartPlayer(bool start) { startPlayer = start; };
 	bool StartPlayer() { return startPlayer; };
 
-	//Printing cards
+	//Printing info
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
 
 	//Round
 	bool NewRound(int order);
-	void Fase1();
+
+		//Fase1
+		void Fase1();
+
+		void CollectCash();
+		void ChoseCards();
+		
+		int BuildingsWithColor(CardColor color);
+		//end Fase1
+
 	int Deposit() { return stash; };
 	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
 	void addCharacter(std::unique_ptr<Character> &Character);
 	bool Build(unsigned int buildingIndex);
 	
 	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
+	//end Round
 	
 private:
 	//system to know

@@ -10,6 +10,8 @@ public:
 
 	CharacterColor Color() { return GROEN; };
 
+	int CollectCash() { return 1; };
+
 	~KoopmanCharacter();
 };
 
