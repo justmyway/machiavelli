@@ -62,6 +62,7 @@ private:
 
 	//round functions
 	void changePlayer();
-	void discardcard(std::shared_ptr<Character> character);
 	void ClearScreen(std::shared_ptr<Player> player);
+	std::vector<std::unique_ptr<Character>> chooseCard(std::unique_ptr<Character> &character, std::vector<std::unique_ptr<Character>> &shuffled_characters);
+	std::vector<std::unique_ptr<Character>> discardCard(std::unique_ptr<Character> &character, std::vector<std::unique_ptr<Character>> &shuffled_characters);
 };
