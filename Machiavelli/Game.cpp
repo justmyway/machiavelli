@@ -40,6 +40,8 @@ Game::Game() :
 		"ruil",
 		"vernietig",
 		"next",
+		"choose",
+		"drop",
 		"chat"
 	};
 
@@ -265,61 +267,66 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 				auto shuffledCharacters(characterset);
 
 				//bekijk en leg bovenste af
-				i->write("Te kiezen kaarten:");
-				for (auto &card : shuffledCharacters)
-				{
-					i->write(card->Name());
-				}
-				discard_characterset.push_back(shuffledCharacters.begin);
-				shuffledCharacters.erase(shuffledCharacters.begin);
+				discardCard(shuffledCharacters.begin, shuffledCharacters);
 
 				//Kies 1 en geef 6 aan andere speler
 					//even static de eerste kiezen, input afhandelen komt later
-				auto chosenCharacter = shuffledCharacters.begin; //Moet nog dynamisch
-				i->addCharacter(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				auto chosenCharacter = shuffledCharacters.begin; //TODO: Moet nog dynamisch
+				chooseCard(chosenCharacter, shuffledCharacters);
+				
 				changePlayer();
 				//andere speler kiest 1 en legt 1 af
-				i->write("Te kiezen kaarten:");
-				for (auto &card : shuffledCharacters)
-				{
-					i->write(card->Name());
-				}
-				current_player->addCharacter(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				chooseCard(chosenCharacter, shuffledCharacters);
 
 					//afleggen
-				discard_characterset.push_back(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				discardCard(chosenCharacter, shuffledCharacters);
 				changePlayer();
 
 				//Koning kiest 1 en legt 1 af
-				i->write("Te kiezen kaarten:");
-				for (auto &card : shuffledCharacters)
-				{
-					i->write(card->Name());
-				}
-				current_player->addCharacter(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				chooseCard(chosenCharacter, shuffledCharacters);
 
 				//afleggen
-				discard_characterset.push_back(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				discardCard(chosenCharacter, shuffledCharacters);
 				changePlayer();
 
 				//speler 2 kiest 1 en legt laatste af
-				i->write("Te kiezen kaarten:");
-				for (auto &card : shuffledCharacters)
-				{
-					i->write(card->Name());
-				}
-				current_player->addCharacter(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				chooseCard(chosenCharacter, shuffledCharacters);
 
 				//afleggen
-				discard_characterset.push_back(chosenCharacter);
-				shuffledCharacters.erase(chosenCharacter);
+				discardCard(chosenCharacter, shuffledCharacters);
 				changePlayer();
+			}
+			else
+			{
+				//cheatmode on
+				Player player1 = players.begin;
+				Player player2 = players.end;
+
+				std::unique_ptr<Character> king_character, murderer_character, preacher_character, merchant_character;
+				for (auto &card : characterset)
+				{
+					if(card->Name() == "Koning")
+					{
+						king_character = std::move(card);
+					}
+					else if (card->Name() == "Moordenaar")
+					{
+						murderer_character = std::move(card);
+					}
+					else if (card->Name() == "Prediker")
+					{
+						preacher_character = std::move(card);
+					}
+					else if (card->Name() == "Koopman")
+					{
+						merchant_character = std::move(card);
+					}
+				}
+
+				player1.addCharacter(std::move(king_character));
+				player1.addCharacter(std::move(murderer_character));
+				player2.addCharacter(std::move(preacher_character));
+				player2.addCharacter(std::move(merchant_character));				
 			}
 			
 			
@@ -357,6 +364,13 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	return true;
 }
 
+ 
+
+void Game::Round(std::shared_ptr<ClientCommand> command)
+{
+
+}
+
 void Game::changePlayer()
 {
 	if (current_player == players.begin)
@@ -367,11 +381,6 @@ void Game::changePlayer()
 	{
 		current_player = players.begin;
 	}
-}
-
-void Game::Round(std::shared_ptr<ClientCommand> command)
-{
-
 }
 
 Game::~Game()
@@ -428,4 +437,33 @@ bool Game::DeturmNextCharacter()
 void Game::ClearScreen(std::shared_ptr<Player> player)
 {
 	player->write("\33[2J");
+}
+
+std::vector<std::unique_ptr<Character>> Game::chooseCard(std::unique_ptr<Character>& character, std::vector<std::unique_ptr<Character>>& shuffled_characters)
+{
+	current_player->write("Te kiezen kaarten:");
+	for (auto &card : shuffled_characters)
+	{
+		current_player->write(card->Name());
+	}
+	current_player->addCharacter(std::move(character));
+	//TODO verwijder uit geschudde kaarten
+	//shuffled_characters.erase(character);
+
+	return shuffled_characters;
+}
+
+std::vector<std::unique_ptr<Character>> Game::discardCard(std::unique_ptr<Character>& character, std::vector<std::unique_ptr<Character>>& shuffled_characters)
+{
+	current_player->write("Te kiezen kaarten om af te leggen:");
+	for (auto &card : shuffled_characters)
+	{
+		current_player->write(card->Name());
+	}
+	discard_characterset.push_back(std::move(character));
+	
+	//TODO verwijder uit geschudde kaarten
+	//shuffled_characters.erase(character);
+
+	return shuffled_characters;
 }
