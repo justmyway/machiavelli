@@ -13,24 +13,30 @@ class Socket;
 class Player {
 public:
 	Player() {}
-	Player(const std::string& name, const std::shared_ptr<Socket> socket) : name{ name }, client{socket}, startPlayer { false }, stash{ 0 } {}
+	Player(const std::string& name, const std::shared_ptr<Socket> socket) : name{ name }, client{socket}, king { false }, stash{ 0 } {}
 
 	//Setup
 	std::string get_name() const { return name; };
 	void set_name(const std::string& new_name) { name = new_name; };
+	void Ingame(std::shared_ptr<Game> currentGame) { game = currentGame; };
 	void write(std::string value);
-	void writeError(std::string value);
-
-	//Who is king
-	void setStartPlayer(bool start) { startPlayer = start; };
-	bool StartPlayer() { return startPlayer; };
+	void writeError(std::string value);	
 
 	//Printing info
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
 
 	//Round
-	bool NewRound(int order);
+	void NewRound();
+	
+	void King(bool start) { king = start; };
+	bool King() { return king; };
+	
+	int Deposit() { return stash; };
+	void addCharacter(std::shared_ptr<Character> Character);
+
+		//turn
+		void CallCaracter(std::shared_ptr<Character> character);
 
 		//Fase1
 		void Fase1();
@@ -38,37 +44,44 @@ public:
 		void CollectCash();
 		void ChoseCards();
 		
-		int BuildingsWithColor(CardColor color);
+		int BuildingsWithColor(CharacterColor color);
 		//end Fase1
 
-	int Deposit() { return stash; };
-	std::vector<std::unique_ptr<Character>> &Characters() { return character_cards; };
-	void addCharacter(std::unique_ptr<Character> &Character);
-	bool Build(unsigned int buildingIndex);
-	
-	std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
+		//Fase2
+		bool Build(unsigned int buildingIndex);
+		std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
+
+			//character properties
+			void Kill(std::string &name);
+			void Destroy(int index);
+
+		//end Fase2
+
 	//end Round
 	
 private:
-	//system to know
+	//Setup
 	std::string name;
 	std::shared_ptr<Socket> client;
+	std::shared_ptr<Game> game;
 
-	//game items
-	bool startPlayer;
+	//Game
+	std::vector<std::unique_ptr<Card>> buildings;
+	std::vector<std::unique_ptr<Card>> cards;
+	std::vector<std::shared_ptr<Character>> character_cards;
+
+	bool king;
 	int stash;
 
 	//Game Round
 	//end Game Round
 
 	//Character turn
-	int maxBuildingsToBuild;
-	std::unique_ptr<Character> current_character;
+	std::shared_ptr<Character> current_character;
+	std::vector<std::unique_ptr<Card>> drawn_cards;
+	void ResetTurn();
+	int buildingsBuild;
 	//end Character turn
-
-	std::vector<std::unique_ptr<Card>> buildings;
-	std::vector<std::unique_ptr<Card>> cards;
-	std::vector<std::unique_ptr<Character>> character_cards;
 };
 
 #endif /* Player_h */

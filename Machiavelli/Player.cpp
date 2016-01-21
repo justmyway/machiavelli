@@ -20,7 +20,7 @@ std::string& operator+(std::string & lhs, const CardColor &rhs) {
 };
 
 std::string& operator+(std::string & lhs, const int rhs) {
-	return lhs += rhs;
+	return lhs += std::to_string(rhs);
 };
 
 void Player::write(std::string value)
@@ -55,21 +55,15 @@ std::vector<std::string> Player::PrintCards()
 	return CardInfo;
 }
 
-bool Player::NewRound(int order)
+void Player::NewRound()
 {
-	for (auto &character : character_cards)
-	{
-		if (character->Order() == order) {
-			//set current player
-			current_character = move(character);
+	character_cards.clear();
+}
 
-			//round variables
-			maxBuildingsToBuild = current_character->maxToBuildBuildings(1);
-			return true;
-		}
-	}
-
-	return false;
+void Player::CallCaracter(std::shared_ptr<Character> character)
+{
+	current_character = character;
+	ResetTurn();
 }
 
 void Player::Fase1()
@@ -80,32 +74,49 @@ void Player::CollectCash()
 {
 	int collectGold = 2;
 
-	//collectGold += current_character->CollectCash(buildings);
+	collectGold += current_character->CollectCash();
+
+	stash += collectGold;
 
 	write("You got " + std::to_string(collectGold) + " gold");
 }
 
 void Player::ChoseCards()
 {
+	int cardsToTake = 2;
+
+	for (auto &building : buildings) {
+		cardsToTake = building->CardAmount(cardsToTake);
+	}
+
+	cardsToTake = current_character->CardAmount(cardsToTake);
+
+	for (int i = 0; i < cardsToTake; i++)
+		//drawn_cards.push_back(game->DrawCard());
+		;
+
+	//todo show drawn cards and display them
 }
 
-int Player::BuildingsWithColor(CardColor color)
+int Player::BuildingsWithColor(CharacterColor color)
 {
-	int NumberOfBuildings = 0;
-	for () {
+	int NumberOfColorBuildings = 0;
+	for (auto &building : buildings) {
+		NumberOfColorBuildings += building->CollectCash(color);
 	}
+	return NumberOfColorBuildings;
 }
 
 bool Player::Build(unsigned int buildingIndex)
 {
-	if (maxBuildingsToBuild != 0) {
+	if (buildingsBuild < current_character->maxToBuildBuildings(1)) {
 		if (buildingIndex < cards.size()) {
 			int neededGold = cards.at(buildingIndex)->Cost();
 			if (stash >= neededGold) {
 				std::string buildingName = cards.at(buildingIndex)->Name();
 				stash -= neededGold;
 				buildings.push_back(std::move(cards.at(buildingIndex)));
-				maxBuildingsToBuild--;
+				buildingsBuild++;
 				write("\"" + buildingName + "\" has been build.");
 				return true;
 			}
@@ -128,7 +139,21 @@ bool Player::Build(unsigned int buildingIndex)
 	return false;
 }
 
-void Player::addCharacter(std::unique_ptr<Character>& Character)
+void Player::Kill(std::string &name)
+{
+	
+}
+
+void Player::Destroy(int index)
+{
+}
+
+void Player::ResetTurn()
+{
+	buildingsBuild = 0;
+}
+
+void Player::addCharacter(std::shared_ptr<Character> Character)
 {
 	character_cards.push_back(Character);
 }

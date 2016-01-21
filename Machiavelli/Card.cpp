@@ -1,4 +1,5 @@
 #include "Card.h"
+#include "Character.h"
 
 Card::Card()
 {
@@ -22,6 +23,14 @@ void Card::setProperties(const std::string & cardName, const int cardCost, const
 	description = cardDescription;
 }
 
+
+int Card::CollectCash(CharacterColor characterColor)
+{
+	if (static_cast<int>(color) == static_cast<int>(characterColor))
+		return 1;
+
+	return 0;
+}
 
 Card::~Card()
 {

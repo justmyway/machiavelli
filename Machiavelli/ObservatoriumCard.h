@@ -8,6 +8,8 @@ public:
 
 	static std::unique_ptr<Card> __stdcall Create();
 
+	int CardAmount(int amount) { return 3; };
+
 	~ObservatoriumCard();
 };
 

@@ -6,11 +6,11 @@ class KoopmanCharacter :
 {
 public:
 	KoopmanCharacter(const std::string name, int order) : Character{ name, order } {};
-	static std::unique_ptr<Character> __stdcall Create(const std::string name, int order);
+	static std::shared_ptr<Character> __stdcall Create(const std::string name, int order);
 
-	CharacterColor Color() { return GROEN; };
+	CharacterColor Color() { return CharacterColor::GROEN; };
 
-	int CollectCash() { return 1; };
+	int CollectCash();
 
 	~KoopmanCharacter();
 };

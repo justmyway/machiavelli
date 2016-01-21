@@ -61,7 +61,8 @@ Game::Game() :
 	//get cards
 	PrepareCards();
 
-	//gold
+	//game properties
+	started = false;
 	GoldReserve = 30;
 
 	//cheatmode 
@@ -107,12 +108,12 @@ void Game::PrepareCharacters()
 
 		auto it = character_map.find(name);
 		if (it != character_map.end()) {
-			std::unique_ptr<Character> character(std::move(it->second));
+			std::shared_ptr<Character> character(std::move(it->second));
 			characterset.push_back(std::move(character));
 		}
 		else 
 		{
-			std::unique_ptr<Character> character(new StandardCharacter(name, order));
+			std::shared_ptr<Character> character(new StandardCharacter(name, order));
 			characterset.push_back(std::move(character));
 		}
 	}
@@ -224,9 +225,14 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		return true;
 	}
 
+	//
+	if (roundSetup) {
+		return true;
+	}
+
 	//is next player, call next character
 	if (cmd.compare("next") == 0) {
-		while (DeturmNextCharacter())
+		while (!CallNextCharacter())
 			;
 	}
 	
@@ -364,27 +370,13 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	return true;
 }
 
- 
-
-void Game::Round(std::shared_ptr<ClientCommand> command)
-{
-
-}
-
-void Game::changePlayer()
-{
-	if (current_player == players.begin)
-	{
-		current_player = players.end;
-	}
-	else
-	{
-		current_player = players.begin;
-	}
-}
-
 Game::~Game()
 {
+}
+
+void Game::ClearScreen(std::shared_ptr<Player> player)
+{
+	player->write("\33[2J");
 }
 
 void Game::InvalidCommand(std::shared_ptr<ClientCommand> command, std::string value)
@@ -392,51 +384,78 @@ void Game::InvalidCommand(std::shared_ptr<ClientCommand> command, std::string va
 	std::shared_ptr<Socket> out = command->get_client();
 
 	out->write("\33[31;40m" + value + "\r\nMachiavelli> ");
-	out->write("\33[30;40m\33g");
+	//out->write("\33[30;40m\33g");
 }
 
-void Game::WriteChatLine(std::pair<std::string, std::string> line)
+void Game::Write(const std::string &value)
+{
+	for (auto &i : players) {
+		i->write(value);
+	}
+}
+
+void Game::WriteChat()
+{
+	for (std::pair<std::string, std::string> &line : chat_history) {
+		WriteChatLine(line);
+	}
+}
+
+void Game::WriteChatLine(const std::pair<std::string, std::string> &line)
 {
 	std::string finished_line = line.first + " >> " + line.second +"\r\n";
-
-	HANDLE  hConsole;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	int col = 10;
-
-	FlushConsoleInputBuffer(hConsole);
-	SetConsoleTextAttribute(hConsole, col);
 
 	for (auto &i : players) {
 		i->write(finished_line);
 	}
-
-	SetConsoleTextAttribute(hConsole, 15);
 }
 
-bool Game::DeturmNextCharacter()
+void Game::SetupRound()
 {
-	if (order == 8) {
-		order = 1;
-	}
-	else {
-		order++;
+	roundSetup = true;
+
+	//make new caracterset to chose from
+	choseable_characterset.clear();
+	discard_characterset.clear();
+
+	for (auto &character : characterset) {
+		character->RoundReset();
 	}
 
-	for (auto &player : players) {
-		if (player->NewRound(order)) {
+	choseable_characterset = characterset;
+	//todo shuffel choseable_characterset
 
-			current_player = player;
-			current_player->Fase1();
+	//todo detemin king
+	order = 0;
+}
 
-			return true;
-		}
+bool Game::CallNextCharacter()
+{
+	order++;
+	if (order == 9) {
+		SetupRound();
+		return false;
 	}
+
+	if (characterset.at(order - 1)->Killed()) {
+		return false;
+	}
+
+	CallCharacter();
+
+	current_player = characterset.at(order - 1)->HoldedBy();
+
+	if (current_player) {
+		current_player->CallCaracter(characterset.at(order - 1));
+		return true;
+	}
+
 	return false;
 }
 
-void Game::ClearScreen(std::shared_ptr<Player> player)
+void Game::CallCharacter()
 {
-	player->write("\33[2J");
+	Write("Koning: \"Ik zou graag de " + characterset.at(order - 1)->Name() + " naar voren roepen!\"");
 }
 
 std::vector<std::unique_ptr<Character>> Game::chooseCard(std::unique_ptr<Character>& character, std::vector<std::unique_ptr<Character>>& shuffled_characters)

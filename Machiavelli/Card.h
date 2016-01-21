@@ -14,7 +14,7 @@ enum class CardColor {
 	ALL
 };
 
-
+class Character;
 
 class Card
 {
@@ -28,6 +28,10 @@ public:
 	int Cost() { return cost; };
 	CardColor Color() { return color; };
 	std::string &Description() { return description; };
+
+	int CollectCash(CharacterColor color);
+	int CardAmount(int amount) { return amount; };
+
 	int Points() { return cost; };
 
 	~Card();

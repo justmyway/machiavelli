@@ -7,7 +7,7 @@ class StandardCharacter :
 public:
 	StandardCharacter(const std::string name, int order) : Character{ name, order } {};
 	
-	CharacterColor Color() { return NONE; };
+	CharacterColor Color() { return CharacterColor::NONE; };
 	
 	~StandardCharacter();
 };
