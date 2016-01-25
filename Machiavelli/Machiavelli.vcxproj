@@ -145,11 +145,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActionCommand.h" />
     <ClInclude Include="BibliotheekCard.h" />
     <ClInclude Include="BouwmeesterCharacter.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="ClientCommand.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="CommandHandler.h" />
     <ClInclude Include="CondottiereCharacter.h" />
     <ClInclude Include="FileReader.h" />
     <ClInclude Include="Game.h" />
@@ -165,6 +168,8 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PredikerCharacter.h" />
     <ClInclude Include="PrestigieusGebouwCard.h" />
+    <ClInclude Include="RadialCommand.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Socket.h" />
     <ClInclude Include="StandardCard.h" />
     <ClInclude Include="StandardCharacter.h" />
@@ -175,10 +180,12 @@
     <ClInclude Include="WerkplaatsCard.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionCommand.cpp" />
     <ClCompile Include="BibliotheekCard.cpp" />
     <ClCompile Include="BouwmeesterCharacter.cpp" />
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="CommandHandler.cpp" />
     <ClCompile Include="CondottiereCharacter.cpp" />
     <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -195,6 +202,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PredikerCharacter.cpp" />
     <ClCompile Include="PrestigieusGebouwCard.cpp" />
+    <ClCompile Include="RadialCommand.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="StandardCard.cpp" />
     <ClCompile Include="StandardCharacter.cpp" />
@@ -206,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="throw.cpp" />
     <ClCompile Include="WerkplaatsCard.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Machiavelli.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
