@@ -20,8 +20,6 @@ public:
 	virtual bool CanBeBought() = 0;
 	virtual bool MayBeDestroyed() = 0;
 
-
-	virtual ~Command() = 0;
 protected:
 	bool running;
 };

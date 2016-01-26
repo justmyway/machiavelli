@@ -1,5 +1,6 @@
 #pragma once
 #include <queue>
+#include <deque>
 #include <Memory>
 #include <map>
 
@@ -41,7 +42,7 @@ private:
 	std::map<std::string, std::unique_ptr<Card>> deck_map;
 
 	std::vector<std::shared_ptr<Character>> characterset;
-	std::vector<std::shared_ptr<Character>> choseable_characterset;
+	std::deque<std::shared_ptr<Character>> choseable_characterset;
 	std::vector<std::shared_ptr<Character>> discard_characterset;
 	std::map<std::string, std::shared_ptr<Character>> character_map;
 
@@ -66,11 +67,18 @@ private:
 	std::shared_ptr<Player> start_player;
 	std::shared_ptr<Player> current_player;
 	
-	//Round functions
+	//Round setup
 	void SetupRound();
+	void RemoveFirstCard();
+	void ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd);
+	void PickCard(int index);
+	void RemoveCard(int index);
+	void PrintChosableCaracters();
+	void NextPlayer();
+	bool YourTurn(std::shared_ptr<ClientCommand> command);
+
+	//Round functions
 	bool CallNextCharacter();
 	void CallCharacter();
 
-	std::vector<std::unique_ptr<Character>> chooseCard(std::unique_ptr<Character> &character, std::vector<std::unique_ptr<Character>> &shuffled_characters);
-	std::vector<std::unique_ptr<Character>> discardCard(std::unique_ptr<Character> &character, std::vector<std::unique_ptr<Character>> &shuffled_characters);
 };

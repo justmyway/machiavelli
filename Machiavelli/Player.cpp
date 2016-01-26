@@ -25,12 +25,12 @@ std::string& operator+(std::string & lhs, const int rhs) {
 
 void Player::write(std::string value)
 {
-	*client << "\r" << value << "\rmachiavelli> ";
+	*client << "\r" << value << "\r\x1b[37;40mmachiavelli> ";
 }
 
 void Player::writeError(std::string value)
 {
-	write("\033[1; 31m" + value + "\033[0m\n");
+	write("\x1b[31;1m" + value + "\n");
 }
 
 std::vector<std::string> Player::PrintBuildings()

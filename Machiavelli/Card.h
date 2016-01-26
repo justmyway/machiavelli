@@ -14,7 +14,7 @@ enum class CardColor {
 	ALL
 };
 
-class Character;
+enum class CharacterColor;
 
 class Card
 {

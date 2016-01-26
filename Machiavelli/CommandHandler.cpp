@@ -34,3 +34,7 @@ bool CommandHandler::MayBeDestroyed()
 {
 	return false;
 }
+
+CommandHandler::~CommandHandler()
+{
+}

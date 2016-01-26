@@ -17,5 +17,7 @@ public:
 	int AmountOfCardsToreturn() override;
 	bool CanBeBought() override;
 	bool MayBeDestroyed() override;
+
+	~CommandHandler();
 };
 
