@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Socket.h"
+#include "Game.h"
 
 using namespace std;
 
@@ -25,12 +26,62 @@ std::string& operator+(std::string & lhs, const int rhs) {
 
 void Player::write(std::string value)
 {
-	*client << "\r" << value << "\r\x1b[37;40mmachiavelli> ";
+	*client << "\r" << value << "\r\x1b[30;40mmachiavelli> ";
 }
 
 void Player::writeError(std::string value)
 {
 	write("\x1b[31;1m" + value + "\n");
+}
+
+void Player::PrintOverview()
+{
+	write("==========================================================\n\r");
+	std::shared_ptr<Player> opponent{ game->GetOpponent(client) };
+	opponent->PrintOverviewOpponent(client);
+	write("==========================================================\n\r");
+	write("Jij, de machtige \"" + name + "\" hebt:\n\r");
+	write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n\r");
+	if (character_cards.size() > 0) {
+		write("Karakterkaarten: \n\r");
+		for (auto &caracter : character_cards)
+			write(caracter->Name() + " ");
+
+		write("\n");
+	}
+	write("Kaarten: " + std::to_string(cards.size()) + "\n\r");
+	if (PrintCards().size() == 0) {
+		write("   Jij hebt helaas geen kaarten meer.\n\r");
+	}
+	else {
+		for (auto &info : PrintCards())
+			write("   " + info + "\n");
+	}
+	write("Gebouwen: " + std::to_string(buildings.size()) + "\n\r");
+	if (PrintBuildings().size() == 0) {
+		write("   Jij hebt helaas nog geen gebouwen gebouwd.\n\r");
+	}
+	else {
+		for (auto &info : PrintBuildings())
+			write("   " + info + "\n\r");
+	}
+	write("==========================================================\n\r");
+}
+
+void Player::PrintOverviewOpponent(std::shared_ptr<Socket> socket)
+{
+	socket->write(name + " heeft:\n\r");
+	socket->write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n\r");
+	socket->write("Kaarten: " + std::to_string(cards.size()) + "\n\r");
+	socket->write("Gebouwen: " + std::to_string(buildings.size()) + "\n\r");
+	std::vector<std::string> building_info = PrintBuildings();
+	if (building_info.size() == 0) {
+		socket->write("   " + name + " heeft helaas nog geen gebouwen gebouwd.\n\r");
+	}
+	else {
+		for (auto info : building_info)
+			socket->write("   " + info + "\n\r");
+	}
 }
 
 std::vector<std::string> Player::PrintBuildings()
@@ -121,7 +172,7 @@ bool Player::Build(unsigned int buildingIndex)
 				return true;
 			}
 			else {
-				writeError("You haven't got enough money for the \"" + cards.at(buildingIndex)->Name() + "\ to build, you need " + std::to_string(neededGold - stash) + " more gold.");
+				writeError("You haven't got enough money for the \"" + cards.at(buildingIndex)->Name() + "\" to build, you need " + std::to_string(neededGold - stash) + " more gold.");
 			}
 		}
 		else {
@@ -151,9 +202,4 @@ void Player::Destroy(int index)
 void Player::ResetTurn()
 {
 	buildingsBuild = 0;
-}
-
-void Player::addCharacter(std::shared_ptr<Character> Character)
-{
-	character_cards.push_back(Character);
 }

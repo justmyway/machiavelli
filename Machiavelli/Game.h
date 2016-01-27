@@ -25,6 +25,7 @@ public:
 
 	//During game
 	bool Execute(std::shared_ptr<ClientCommand> command);
+	std::shared_ptr<Player> GetOpponent(std::shared_ptr<Socket> socket);
 
 	//Round
 	std::vector<std::shared_ptr<Player>> Players() { return players; };
@@ -37,6 +38,7 @@ private:
 
 	std::vector<std::shared_ptr<Player>> players;
 
+	std::deque<std::unique_ptr<Card>> clean_deck;
 	std::queue<std::unique_ptr<Card>> deck;
 	std::vector<std::unique_ptr<Card>> discard_deck;
 	std::map<std::string, std::unique_ptr<Card>> deck_map;

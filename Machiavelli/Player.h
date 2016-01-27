@@ -20,9 +20,12 @@ public:
 	void set_name(const std::string& new_name) { name = new_name; };
 	void Ingame(std::shared_ptr<Game> currentGame) { game = currentGame; };
 	void write(std::string value);
-	void writeError(std::string value);	
+	void writeError(std::string value);
+	std::shared_ptr<Socket> GetSocket() { return client; };
 
 	//Printing info
+	void PrintOverview();
+	void PrintOverviewOpponent(std::shared_ptr<Socket> socket);
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
 
@@ -33,7 +36,9 @@ public:
 	bool King() { return king; };
 	
 	int Deposit() { return stash; };
-	void addCharacter(std::shared_ptr<Character> Character);
+	void Deposit(int amount) { stash += amount; };
+	void addCharacter(std::shared_ptr<Character> character) { character_cards.push_back(character); };
+	void addCard(std::unique_ptr<Card> card) { cards.push_back(std::move(card)); };
 
 		//turn
 		void CallCaracter(std::shared_ptr<Character> character);

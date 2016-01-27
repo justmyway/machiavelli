@@ -27,6 +27,8 @@
 #include <algorithm>
 #include <sstream>
 #include <windows.h>
+#include <chrono>
+#include <random>
 
 Game::Game() :
 	file_reader(new FileReader())
@@ -34,14 +36,13 @@ Game::Game() :
 	//commands
 	valid_commands = {
 		"overzicht",
+		"kies",
 		"bouw",
 		"vermoord",
 		"besteel",
 		"ruil",
 		"vernietig",
-		"next",
-		"choose",
-		"drop",
+		"volgende",
 		"chat"
 	};
 
@@ -65,12 +66,18 @@ Game::Game() :
 	started = false;
 	GoldReserve = 30;
 
+	//shuffle cards
+	//unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+	auto engine = std::default_random_engine{};
+	std::shuffle(clean_deck.begin(), clean_deck.end(), engine);
+	deck = std::queue<std::unique_ptr<Card>>(std::move(clean_deck));
+
 	//cheatmode 
 	cheatMode = false;
 
 	std::cerr << "new game created. \n";
 }
-
 
 void Game::FillDeckMap()
 {
@@ -144,13 +151,13 @@ void Game::PrepareCards()
 				}
 				std::unique_ptr<Card> card(std::move(it->second));
 				card->setProperties(name, cost, color, file_reader->ColumnValue(line, 4));
-				deck.push(std::move(card));
+				clean_deck.push_back(std::move(card));
 			}
 			else
 			{
 				std::unique_ptr<Card> card(new StandardCard());
 				card->setProperties(name, cost, color);
-				deck.push(std::move(card));
+				clean_deck.push_back(std::move(card));
 			}
 		}
 
@@ -181,18 +188,24 @@ void Game::Start()
 {
 	std::cerr << "game started. \n";
 
-	for (auto &i : players) {
-		ClearScreen(i);
-		i->write("De game gaat beginnen! \r\n");
-	}
-
-	for (int i = 0; i < 99999999;i++) {
-		8 * 8 + 8 - 5 + 5 * 5 / 5;
-	}
+	Write("De game gaat beginnen! \r\n");
 
 	started = true;
 
+	//setup start
 	current_player = players.front();
+
+	for (auto &player : players) {
+
+		player->Ingame(std::shared_ptr<Game>(this));
+		player->Deposit(2);
+		GoldReserve -= 2;
+
+		for (int i = 0; i < 4; i++) {
+			player->addCard(std::move(deck.front()));
+			deck.pop();
+		}
+	}
 
 	//ready game
 	SetupRound();
@@ -240,7 +253,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	}
 
 	//is next player, call next character
-	if (cmd.compare("next") == 0) {
+	if (cmd.compare("volgende") == 0) {
 		while (!CallNextCharacter())
 			;
 		return true;
@@ -295,30 +308,33 @@ void Game::SetupRound()
 	choseable_characterset.clear();
 	discard_characterset.clear();
 
-	for (auto &character : characterset) {
+	for (auto &character : characterset){
 		character->RoundReset();
 		choseable_characterset.push_back(character);
 	}
 
-	std::random_shuffle(choseable_characterset.begin(), choseable_characterset.end());
-	std::random_shuffle(choseable_characterset.begin(), choseable_characterset.end());
-
+	auto engine = std::default_random_engine{};
+	std::shuffle(choseable_characterset.begin(), choseable_characterset.end(), engine);
+	
 	order = 0;
+
+	for (auto& player : players) {
+		ClearScreen(player);
+		player->PrintOverview();
+	}
 }
 
 void Game::RemoveFirstCard()
 {
-	ClearScreen(current_player);
-
 	if (choseable_characterset.front()->Order() != 4) {
-		current_player->write("The first card put away is: " + choseable_characterset.front()->Name());
-		current_player->write("You can chose one of the folowing:");
+		current_player->write("De eerste kaart die afgelegd is: " + choseable_characterset.front()->Name() + "\n");
+		current_player->write("Je kan kiezen uit de volgende kaarten: \n");
 		discard_characterset.push_back(choseable_characterset.front());
 		choseable_characterset.pop_front();
 	}
 	else {
-		current_player->write("The first card put away is: " + choseable_characterset.at(1)->Name());
-		current_player->write("You can chose one of the folowing:");
+		current_player->write("De eerste kaart die afgelegd is: " + choseable_characterset.at(1)->Name() + "\n");
+		current_player->write("Je kan kiezen uit de volgende kaarten: \n");
 		discard_characterset.push_back(choseable_characterset.at(1));
 		choseable_characterset.erase(choseable_characterset.begin() + 1);
 	}
@@ -328,8 +344,6 @@ void Game::RemoveFirstCard()
 
 void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 {
-	std::cout << cmd << "hier moet geen kies meer staan" << std::endl;
-
 	std::stringstream stream(cmd);
 	std::string keeping_card;
 	int keeping_card_index;
@@ -342,13 +356,12 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 			PickCard(keeping_card_index);
 			//next player
 			NextPlayer();
-			current_player->write("You can chose and remove one of the folowing:");
+			current_player->write("Je kan een van de volgende kaarten kiezen en afleggen: \n");
 			PrintChosableCaracters();
 			return;
 		}
 		else {
-			current_player->writeError("That number is invalid! You can not pick this card.");
-			current_player->writeError("Try again.");
+			current_player->writeError("Dat number bestaat niet! Deze kaart kan je niet kiezen. \nProbeer het nogmaals.");
 			return;
 		}
 	}else{
@@ -358,7 +371,7 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 		stream >> losing_card;
 		losing_card_index = std::stoi(losing_card);
 
-		if ((keeping_card_index < choseable_characterset.size()) && (losing_card_index < choseable_characterset.size()) && (keeping_card_index =! losing_card_index)) {
+		if ((keeping_card_index < choseable_characterset.size()) && (losing_card_index < choseable_characterset.size()) && !(keeping_card_index == losing_card_index)) {
 
 			if (keeping_card_index < losing_card_index)
 				losing_card_index--;
@@ -367,8 +380,7 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 			RemoveCard(losing_card_index);
 		}
 		else {
-			current_player->writeError("That number is invalid! Max number");
-			current_player->writeError("Try again.");
+			current_player->writeError("Dat number bestaat niet! Hoogste nummer is " + std::to_string(choseable_characterset.size()) + "\nProbeer het nogmaals.");
 			return;
 		}
 	}
@@ -381,27 +393,30 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 	else {
 		//next player
 		NextPlayer();
-		current_player->write("You can chose and remove one of the folowing:");
+		current_player->write("You can chose and remove one of the folowing: \n");
 		PrintChosableCaracters();
 	}	
 }
 
 void Game::PickCard(int index)
 {
+	current_player->write("Je hebt de " + choseable_characterset.at(index)->Name() + " gekozen. \n");
+	choseable_characterset.at(index)->HoldedBy(current_player);
 	current_player->addCharacter(choseable_characterset.at(index));
 	choseable_characterset.erase(choseable_characterset.begin() + index);
 }
 
 void Game::RemoveCard(int index)
 {
+	current_player->write("Je hebt de " + choseable_characterset.at(index)->Name() + " weg gestopt. \n");
 	discard_characterset.push_back(choseable_characterset.at(index));
 	choseable_characterset.erase(choseable_characterset.begin() + index);
 }
 
 void Game::PrintChosableCaracters()
 {
-	for (int i = 0; i < choseable_characterset.size()-1; i++) {
-		current_player->write("   [" + std::to_string(i) + "]  " + choseable_characterset.at(i)->Name() + " - prioriteit " + std::to_string(choseable_characterset.at(i)->Order()));
+	for (int i = 0; i < choseable_characterset.size(); i++) {
+		current_player->write("   [" + std::to_string(i) + "]  " + choseable_characterset.at(i)->Name() + " - prioriteit " + std::to_string(choseable_characterset.at(i)->Order()) + "\n");
 	}
 }
 
@@ -423,6 +438,17 @@ bool Game::YourTurn(std::shared_ptr<ClientCommand> command)
 	else {
 		command->get_player()->writeError("It is not your turn, wait a moment.");
 		return false;
+	}
+}
+
+std::shared_ptr<Player> Game::GetOpponent(std::shared_ptr<Socket> socket)
+{
+	std::cout << players.size() << std::endl;
+	if (players.at(0)->GetSocket() == socket) {
+		return players.at(1);
+	}
+	else {
+		return players.at(0);
 	}
 }
 
@@ -452,7 +478,7 @@ bool Game::CallNextCharacter()
 
 void Game::CallCharacter()
 {
-	Write("\x1b[33;1mKoning: \"Ik zou graag de " + characterset.at(order - 1)->Name() + " naar voren roepen!\"\x1b[30;40m");
+	Write("\x1b[33;1mKoning: \"Ik zou graag de " + characterset.at(order - 1)->Name() + " naar voren roepen!\"\x1b[30;40m\n");
 }
 
 /*std::vector<std::unique_ptr<Character>> Game::chooseCard(std::unique_ptr<Character>& character, std::vector<std::unique_ptr<Character>>& shuffled_characters)
