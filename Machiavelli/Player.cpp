@@ -24,9 +24,11 @@ std::string& operator+(std::string & lhs, const int rhs) {
 	return lhs += std::to_string(rhs);
 };
 
-void Player::write(std::string value)
+void Player::write(std::string value, bool start)
 {
-	*client << "\r" << value << "\r\x1b[30;40mmachiavelli> ";
+	*client << "\r" << value;
+	if (start)
+		*client << "\r\x1b[30;40mmachiavelli> ";
 }
 
 void Player::writeError(std::string value)
@@ -36,52 +38,58 @@ void Player::writeError(std::string value)
 
 void Player::PrintOverview()
 {
-	write("==========================================================\n\r");
 	std::shared_ptr<Player> opponent{ game->GetOpponent(client) };
-	opponent->PrintOverviewOpponent(client);
-	write("==========================================================\n\r");
-	write("Jij, de machtige \"" + name + "\" hebt:\n\r");
-	write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n\r");
+	std::vector<std::string> opponent_info = opponent->PrintOverviewOpponent();
+	write("\x1b[37;47mIn het spel aanwezig:\n", false);
+	write("==========================================================\n", false);
+	for (auto &info : opponent_info)
+		write(info, false);
+	write("==========================================================\n", false);
+	write("Jij, de machtige \"" + name + "\" hebt:\n", false);
+	write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n", false);
 	if (character_cards.size() > 0) {
-		write("Karakterkaarten: \n\r");
+		write("Karakterkaarten: \n", false);
 		for (auto &caracter : character_cards)
-			write(caracter->Name() + " ");
+			write(caracter->Name() + " ", false);
 
-		write("\n");
+		write("\n", false);
 	}
-	write("Kaarten: " + std::to_string(cards.size()) + "\n\r");
+	write("Kaarten: " + std::to_string(cards.size()) + "\n", false);
 	if (PrintCards().size() == 0) {
-		write("   Jij hebt helaas geen kaarten meer.\n\r");
+		write("   Jij hebt helaas geen kaarten meer.\n", false);
 	}
 	else {
 		for (auto &info : PrintCards())
-			write("   " + info + "\n");
+			write("   " + info + "\n", false);
 	}
-	write("Gebouwen: " + std::to_string(buildings.size()) + "\n\r");
+	write("Gebouwen: " + std::to_string(buildings.size()) + "\n", false);
 	if (PrintBuildings().size() == 0) {
-		write("   Jij hebt helaas nog geen gebouwen gebouwd.\n\r");
+		write("   Jij hebt helaas nog geen gebouwen gebouwd.\n", false);
 	}
 	else {
 		for (auto &info : PrintBuildings())
-			write("   " + info + "\n\r");
+			write("   " + info + "\n", false);
 	}
-	write("==========================================================\n\r");
+	write("==========================================================\n");
 }
 
-void Player::PrintOverviewOpponent(std::shared_ptr<Socket> socket)
+std::vector<std::string> Player::PrintOverviewOpponent()
 {
-	socket->write(name + " heeft:\n\r");
-	socket->write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n\r");
-	socket->write("Kaarten: " + std::to_string(cards.size()) + "\n\r");
-	socket->write("Gebouwen: " + std::to_string(buildings.size()) + "\n\r");
+	std::vector<std::string> info_string;
+	info_string.push_back(name + " heeft: \n");
+	info_string.push_back("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n");
+	info_string.push_back("Kaarten: " + std::to_string(cards.size()) + "\n");
+	info_string.push_back("Gebouwen: " + std::to_string(buildings.size()) + "\n");
 	std::vector<std::string> building_info = PrintBuildings();
 	if (building_info.size() == 0) {
-		socket->write("   " + name + " heeft helaas nog geen gebouwen gebouwd.\n\r");
+		info_string.push_back("   " + name + " heeft helaas nog geen gebouwen gebouwd.\n");
 	}
 	else {
 		for (auto info : building_info)
-			socket->write("   " + info + "\n\r");
+			info_string.push_back("   " + info + "\n");
 	}
+
+	return info_string;
 }
 
 std::vector<std::string> Player::PrintBuildings()
@@ -99,7 +107,7 @@ std::vector<std::string> Player::PrintCards()
 {
 	std::vector<std::string> CardInfo;
 
-	for (auto const& i : buildings) {
+	for (auto const& i : cards) {
 		CardInfo.push_back(i->Name() + " (" + i->Color() + ", " + i->Cost() + ((i->Description().size() > 0) ? ", " + i->Description() : "") + "):");
 	};
 

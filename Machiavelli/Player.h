@@ -19,13 +19,13 @@ public:
 	std::string get_name() const { return name; };
 	void set_name(const std::string& new_name) { name = new_name; };
 	void Ingame(std::shared_ptr<Game> currentGame) { game = currentGame; };
-	void write(std::string value);
+	void write(std::string value, bool start = true);
 	void writeError(std::string value);
 	std::shared_ptr<Socket> GetSocket() { return client; };
 
 	//Printing info
 	void PrintOverview();
-	void PrintOverviewOpponent(std::shared_ptr<Socket> socket);
+	std::vector<std::string> PrintOverviewOpponent();
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
 
