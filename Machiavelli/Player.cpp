@@ -40,7 +40,7 @@ void Player::PrintOverview()
 {
 	std::shared_ptr<Player> opponent{ game->GetOpponent(client) };
 	std::vector<std::string> opponent_info = opponent->PrintOverviewOpponent();
-	write("\x1b[37;47mIn het spel aanwezig:\n", false);
+	//write("In het spel aanwezig:\n", false);
 	write("==========================================================\n", false);
 	for (auto &info : opponent_info)
 		write(info, false);

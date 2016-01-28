@@ -67,7 +67,7 @@ void handle_client(shared_ptr<Socket> client) // this function runs in a separat
         client->write(machiavelli::prompt);
 		string name {client->readline()};
 		shared_ptr<Player> player {new Player {name, client}};
-		*client << "Welcome, " << name << ", have fun playing our game!\r\n" << machiavelli::prompt;
+		*client << "\x1b[33;1mWelcome, " << name << ", have fun playing our game!\x1b[30;40m\r\n" << machiavelli::prompt;
 		
 		//Asigning to a game
 		ClientCommand command{ "I would love to play a game!", client, player };

@@ -268,7 +268,7 @@ Game::~Game()
 
 void Game::ClearScreen(std::shared_ptr<Player> player)
 {
-	player->write("\33[2J\r\n");
+	player->write("\33[2J\x1b[30;40m");
 }
 
 void Game::InvalidCommand(std::shared_ptr<ClientCommand> command, std::string value)
