@@ -7,13 +7,6 @@ std::shared_ptr<Character> BouwmeesterCharacter::Create(const std::string name, 
 	return std::move(character);
 }
 
-int BouwmeesterCharacter::CardAmount(int amount)
-{
-	actionPreformed = true;
-	return amount + 2;
-}
-
-
 BouwmeesterCharacter::~BouwmeesterCharacter()
 {
 }

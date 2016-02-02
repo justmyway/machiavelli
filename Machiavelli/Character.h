@@ -37,7 +37,6 @@ public:
 	bool ActionPreformed() { return actionPreformed; };
 
 	int CollectCash() { return 0; };
-	int CardAmount(int amount) { return amount; };
 	int maxToBuildBuildings(int amount) { return amount; };
 
 	~Character();

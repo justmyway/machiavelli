@@ -42,12 +42,12 @@ public:
 
 		//turn
 		void CallCaracter(std::shared_ptr<Character> character);
+		int fase;
 
-		//Fase1
-		void Fase1();
-
-		void CollectCash();
+		bool CollectCash();
 		void ChoseCards();
+		void ChoseCards(std::string value);
+		bool Busy() { return chosing_cards; };
 		
 		int BuildingsWithColor(CharacterColor color);
 		//end Fase1
@@ -84,8 +84,10 @@ private:
 	//Character turn
 	std::shared_ptr<Character> current_character;
 	std::vector<std::unique_ptr<Card>> drawn_cards;
+	bool chosing_cards;
 	void ResetTurn();
 	int buildingsBuild;
+	int cardsTaken;
 	//end Character turn
 };
 

@@ -2,6 +2,8 @@
 #include "Socket.h"
 #include "Game.h"
 
+#include <sstream>
+
 using namespace std;
 
 std::string& operator+(std::string & lhs, const CardColor &rhs) {
@@ -122,22 +124,26 @@ void Player::NewRound()
 void Player::CallCaracter(std::shared_ptr<Character> character)
 {
 	current_character = character;
+	fase = 1;
 	ResetTurn();
+	write("Inkomsten fase, kies voor goud of kaarten.\n");
 }
 
-void Player::Fase1()
+bool Player::CollectCash()
 {
-}
+	if (fase != 1)
+		return false;
 
-void Player::CollectCash()
-{
 	int collectGold = 2;
 
 	collectGold += current_character->CollectCash();
 
 	stash += collectGold;
 
-	write("You got " + std::to_string(collectGold) + " gold");
+	fase = 2;
+
+	write("Je hebt " + std::to_string(collectGold) + " goud gekregen.\n");
+	return true;
 }
 
 void Player::ChoseCards()
@@ -148,13 +154,69 @@ void Player::ChoseCards()
 		cardsToTake = building->CardAmount(cardsToTake);
 	}
 
-	cardsToTake = current_character->CardAmount(cardsToTake);
+	while (cardsToTake > 0){
+		drawn_cards.push_back(game->DrawCard());
+		cardsToTake--;
+	}
 
-	for (int i = 0; i < cardsToTake; i++)
-		//drawn_cards.push_back(game->DrawCard());
-		;
+	write("Je kan een van de volgende kaarten kiezen:\n");
 
-	//todo show drawn cards and display them
+	int count = 0;
+
+	for (auto const& i : drawn_cards) {
+		write("   [" + std::to_string(count) + "] " + i->Name() + " (" + i->Color() + ", " + i->Cost() + ((i->Description().size() > 0) ? ", " + i->Description() : "") + ")\n");
+		count++;
+	};
+
+	chosing_cards = true;
+}
+
+void Player::ChoseCards(std::string value)
+{
+	int cardsToTake = 1;
+	for (auto &building : buildings) {
+		cardsToTake = building->CardAmountKeep(cardsToTake);
+	}
+
+	if (cardsTaken < cardsToTake) {
+		std::stringstream stream(value);
+		std::string keeping_card;
+		int keeping_card_index;
+		stream >> keeping_card;
+		keeping_card_index = std::stoi(keeping_card);
+
+		if ((keeping_card_index < drawn_cards.size()) && (keeping_card_index >= 0)) {
+			cards.push_back(std::move(drawn_cards.at(keeping_card_index)));
+			drawn_cards.erase(drawn_cards.begin() + keeping_card_index);
+			cardsTaken++;
+			if (cardsTaken >= cardsToTake) {
+				while (drawn_cards.size() > 0) {
+					game->DiscardCard(std::move(drawn_cards.at(0)));
+					drawn_cards.erase(drawn_cards.begin() + 0);
+				}
+				write("Je hebt de " + cards.back()->Name() + " gekozen.\n");
+				fase = 2;
+				chosing_cards = false;
+			}
+			else {
+				write("Je kan nog een van de volgende kaarten kiezen:\n");
+
+				int count = 0;
+
+				for (auto const& i : cards) {
+					write("   [" + std::to_string(count) + "] " + i->Name() + " (" + i->Color() + ", " + i->Cost() + ((i->Description().size() > 0) ? ", " + i->Description() : "") + ")\n");
+					count++;
+				};
+			}
+		}
+		else {
+			writeError("Dit getal: " + std::to_string(keeping_card_index) + " bestaat niet\n");
+		}
+	}
+	else {
+		fase = 2;
+		chosing_cards = false;
+	}
 }
 
 int Player::BuildingsWithColor(CharacterColor color)
@@ -168,6 +230,10 @@ int Player::BuildingsWithColor(CharacterColor color)
 
 bool Player::Build(unsigned int buildingIndex)
 {
+	if (fase == 1) {
+		writeError("Je zit momentaal in de inkomsten fase maak deze eerst af.");
+		return false;
+	}
 	if (buildingsBuild < current_character->maxToBuildBuildings(1)) {
 		if (buildingIndex < cards.size()) {
 			int neededGold = cards.at(buildingIndex)->Cost();
@@ -176,24 +242,24 @@ bool Player::Build(unsigned int buildingIndex)
 				stash -= neededGold;
 				buildings.push_back(std::move(cards.at(buildingIndex)));
 				buildingsBuild++;
-				write("\"" + buildingName + "\" has been build.");
+				write("\"" + buildingName + "\" is gebouwd!\n.");
 				return true;
 			}
 			else {
-				writeError("You haven't got enough money for the \"" + cards.at(buildingIndex)->Name() + "\" to build, you need " + std::to_string(neededGold - stash) + " more gold.");
+				writeError("Je hebt niet genoeg goud voor de \"" + cards.at(buildingIndex)->Name() + "\", je hebt nog " + std::to_string(neededGold - stash) + " goud nodig.\n");
 			}
 		}
 		else {
 			if (cards.size() == 0) {
-				writeError("Deze kaart bestaat niet, Beschikbaar: 0-" + std::to_string(cards.size() - 1));
+				writeError("Deze kaart bestaat niet, Beschikbaar: 0-" + std::to_string(cards.size() - 1) + "\n");
 			}
 			else {
-				writeError("Je hebt momentaal geen kaarten op hand, zorg dat je die eerst hebt.");
+				writeError("Je hebt momentaal geen kaarten op hand, zorg dat je die eerst hebt.\n");
 			}
 		}
 	}
 	else {
-		writeError("Je mag deze beurt niet meer gebouwen bouwen.");
+		writeError("Je mag deze beurt niet meer gebouwen bouwen.\n");
 	}
 	return false;
 }
@@ -210,4 +276,6 @@ void Player::Destroy(int index)
 void Player::ResetTurn()
 {
 	buildingsBuild = 0;
+	chosing_cards = false;
+	cardsTaken = 0;
 }

@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Command">
       <UniqueIdentifier>{bf3a9319-4574-4ebb-a58e-d196947e474a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Command\commands">
+      <UniqueIdentifier>{26322c5f-39e3-4bb8-8d53-0555793fdd43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command\commands">
+      <UniqueIdentifier>{9920de46-f55b-4064-b9c3-45fe9dc9b05d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -147,6 +153,9 @@
     <ClInclude Include="RadialCommand.h">
       <Filter>Header Files\Command</Filter>
     </ClInclude>
+    <ClInclude Include="InnGold.h">
+      <Filter>Header Files\Command\commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -235,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="RadialCommand.cpp">
       <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="InnGold.cpp">
+      <Filter>Source Files\Command\commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,7 @@ public:
 
 	int CollectCash(CharacterColor color);
 	int CardAmount(int amount) { return amount; };
+	int CardAmountKeep(int amount) { return amount; };
 
 	int Points() { return cost; };
 

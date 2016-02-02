@@ -9,6 +9,8 @@ public:
 
 	static std::unique_ptr<Card> __stdcall Create();
 
+	int CardAmountKeep(int amount) { return amount++; };
+
 	~BibliotheekCard();
 };
 

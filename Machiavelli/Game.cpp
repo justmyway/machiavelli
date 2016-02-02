@@ -36,6 +36,8 @@ Game::Game() :
 	//commands
 	valid_commands = {
 		"overzicht",
+		"innen",
+		"kaart",
 		"kies",
 		"bouw",
 		"vermoord",
@@ -74,7 +76,7 @@ Game::Game() :
 	deck = std::queue<std::unique_ptr<Card>>(std::move(clean_deck));
 
 	//cheatmode 
-	cheatMode = false;
+	cheat_mode = true;
 
 	std::cerr << "new game created. \n";
 }
@@ -209,7 +211,14 @@ void Game::Start()
 
 	//ready game
 	SetupRound();
+	if (cheat_mode)	Write("\x1b[35;40m>> CHEATMODE << De kaarten worden al voor je gekozen\n\x1b[30;40m");
 	RemoveFirstCard();
+	if (cheat_mode) {
+		ChoseCards(nullptr, "1");
+		ChoseCards(nullptr, "1 0");
+		ChoseCards(nullptr, "0 1");
+		ChoseCards(nullptr, "0 1");
+	}
 }
 
 bool Game::Execute(std::shared_ptr<ClientCommand> command)
@@ -230,7 +239,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 
 	//check chat
 	if (cmd.compare("chat") == 0) {
-		std::pair<std::string, std::string> line = std::make_pair(command->get_player()->get_name(), command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		std::pair<std::string, std::string> line = std::make_pair(command->get_player()->get_name(), command->get_cmd().substr(cmd.size(), command->get_cmd().size()) + "           ");
 		chat_history.push_back(line);
 		WriteChatLine(line);
 		return true;
@@ -251,11 +260,46 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		}
 		return true;
 	}
+	
+	if (cmd.compare("kies") == 0 && YourTurn(command) && current_player->Busy()) {
+		current_player->ChoseCards(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		return true;
+	}
+	else if(current_player->Busy()) {
+		current_player->writeError("Dit is nu niet van toepassing!");
+		current_player->writeError("Kies een kaart!");
+		return true;
+	}
+
+	if (!YourTurn(command)) {
+		command->get_player()->writeError("Het is helaas niet jou beurt.");
+		return true;
+	}
 
 	//is next player, call next character
 	if (cmd.compare("volgende") == 0) {
 		while (!CallNextCharacter())
 			;
+		return true;
+	}
+
+	if(cmd.compare("overzicht") == 0) {
+		current_player->PrintOverview();
+		return true;
+	}
+
+	if (cmd.compare("innen") == 0) {
+		current_player->CollectCash();
+		return true;
+	}
+
+	if (cmd.compare("kaart") == 0) {
+		current_player->ChoseCards();
+		return true;
+	}
+	
+	if (cmd.compare("bouw") == 0) {
+		current_player->Build(std::stoi(command->get_cmd().substr(cmd.size(), command->get_cmd().size())));
 		return true;
 	}
 	
@@ -388,7 +432,8 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 	//see if setup is done
 	if (choseable_characterset.size() == 0) {
 		roundSetup = false;
-		CallNextCharacter();
+		while (!CallNextCharacter())
+			;
 	}
 	else {
 		//next player
@@ -400,7 +445,7 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 
 void Game::PickCard(int index)
 {
-	current_player->write("Je hebt de " + choseable_characterset.at(index)->Name() + " gekozen. \n");
+	current_player->write("Je hebt de \x1b[32;40m" + choseable_characterset.at(index)->Name() + "\x1b[30;40m gekozen. \n");
 	choseable_characterset.at(index)->HoldedBy(current_player);
 	current_player->addCharacter(choseable_characterset.at(index));
 	choseable_characterset.erase(choseable_characterset.begin() + index);
@@ -408,7 +453,7 @@ void Game::PickCard(int index)
 
 void Game::RemoveCard(int index)
 {
-	current_player->write("Je hebt de " + choseable_characterset.at(index)->Name() + " weg gestopt. \n");
+	current_player->write("Je hebt de \x1b[31;40m" + choseable_characterset.at(index)->Name() + "\x1b[30;40m weg gestopt. \n");
 	discard_characterset.push_back(choseable_characterset.at(index));
 	choseable_characterset.erase(choseable_characterset.begin() + index);
 }
@@ -468,7 +513,7 @@ bool Game::CallNextCharacter()
 
 	current_player = characterset.at(order - 1)->HoldedBy();
 
-	if (current_player) {
+	if (current_player != nullptr) {
 		current_player->CallCaracter(characterset.at(order - 1));
 		return true;
 	}
@@ -479,4 +524,21 @@ bool Game::CallNextCharacter()
 void Game::CallCharacter()
 {
 	Write("\x1b[33;1mKoning: \"Ik zou graag de " + characterset.at(order - 1)->Name() + " naar voren roepen!\"\x1b[30;40m\n");
+}
+
+std::unique_ptr<Card> Game::DrawCard()
+{
+	if (deck.size() == 0) {
+		auto engine = std::default_random_engine{};
+		std::shuffle(discard_deck.begin(), discard_deck.end(), engine);
+		deck = std::queue<std::unique_ptr<Card>>(std::move(discard_deck));
+	}
+	auto item = std::move(deck.front());
+	deck.pop();
+	return std::move(item);
+}
+
+void Game::DiscardCard(std::unique_ptr<Card> card)
+{
+	discard_deck.push_back(std::move(card));
 }
