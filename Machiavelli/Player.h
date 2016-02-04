@@ -13,7 +13,7 @@ class Socket;
 class Player {
 public:
 	Player() {}
-	Player(const std::string& name, const std::shared_ptr<Socket> socket) : name{ name }, client{socket}, king { false }, stash{ 0 } {}
+	Player(const std::string& name, const std::shared_ptr<Socket> socket) : name{ name }, client{ socket }, king{ false }, stash{ 0 }, finish_points{0} {}
 
 	//Setup
 	std::string get_name() const { return name; };
@@ -22,12 +22,14 @@ public:
 	void write(std::string value, bool start = true);
 	void writeError(std::string value);
 	std::shared_ptr<Socket> GetSocket() { return client; };
+	int CalculatePoints();
 
 	//Printing info
 	void PrintOverview();
 	std::vector<std::string> PrintOverviewOpponent();
 	std::vector<std::string> PrintBuildings();
 	std::vector<std::string> PrintCards();
+	int Buildings() { return buildings.size(); };
 
 	//Round
 	void NewRound();
@@ -39,6 +41,7 @@ public:
 	void Deposit(int amount) { stash += amount; };
 	void addCharacter(std::shared_ptr<Character> character) { character_cards.push_back(character); };
 	void addCard(std::unique_ptr<Card> card) { cards.push_back(std::move(card)); };
+	std::vector<std::unique_ptr<Card>> getCards() { std::move(cards); cards.clear(); };
 
 		//turn
 		void CallCaracter(std::shared_ptr<Character> character);
@@ -57,8 +60,12 @@ public:
 		std::vector<std::unique_ptr<Card>> ReturnCards() { return std::move(cards); };
 
 			//character properties
-			void Kill(std::string &name);
+			void Murder(std::string &name);
+			void Rob(std::string &name);
+			void SwapCards(std::string &name);
+			void TakeTwoCards();
 			void Destroy(int index);
+			bool DestroyBuilding(int index);
 
 		//end Fase2
 
@@ -69,6 +76,7 @@ private:
 	std::string name;
 	std::shared_ptr<Socket> client;
 	std::shared_ptr<Game> game;
+	int finish_points;
 
 	//Game
 	std::vector<std::unique_ptr<Card>> buildings;

@@ -28,9 +28,13 @@ public:
 	std::shared_ptr<Player> GetOpponent(std::shared_ptr<Socket> socket);
 	std::unique_ptr<Card> DrawCard();
 	void DiscardCard(std::unique_ptr<Card> card);
+	bool GameWon();
+	bool FirstFinishes();
 
 	//Round
 	std::vector<std::shared_ptr<Player>> Players() { return players; };
+	bool Murder(std::string &name);
+	bool Rob(std::string &name);
 
 	~Game();
 private:
@@ -56,6 +60,7 @@ private:
 	bool cheat_mode;
 	bool started;
 	int GoldReserve;
+	bool first_finishes;
 
 	//During game - chat
 	void ClearScreen(std::shared_ptr<Player> player);

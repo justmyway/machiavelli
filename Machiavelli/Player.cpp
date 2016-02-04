@@ -38,6 +38,11 @@ void Player::writeError(std::string value)
 	write("\x1b[31;1m" + value + "\n");
 }
 
+int Player::CalculatePoints()
+{
+	return 0;
+}
+
 void Player::PrintOverview()
 {
 	std::shared_ptr<Player> opponent{ game->GetOpponent(client) };
@@ -126,6 +131,12 @@ void Player::CallCaracter(std::shared_ptr<Character> character)
 	current_character = character;
 	fase = 1;
 	ResetTurn();
+	if (current_character->Robed() != nullptr) {
+		write("\x1b[36;1mJe bent van " + std::to_string(stash) + " goud beroofd door " + current_character->Robed()->get_name() + ".\x1b[30;40m\n");
+		current_character->Robed()->write("\x1b[36;1mJe hebt de " + current_character->Name() + " bestolen van " + std::to_string(stash) + " goud.\x1b[30;40m\n");
+		current_character->Robed()->Deposit(stash);
+		stash = 0;
+	}
 	write("Inkomsten fase, kies voor goud of kaarten.\n");
 }
 
@@ -195,6 +206,13 @@ void Player::ChoseCards(std::string value)
 					drawn_cards.erase(drawn_cards.begin() + 0);
 				}
 				write("Je hebt de " + cards.back()->Name() + " gekozen.\n");
+
+				int collectGold = current_character->CollectCash();
+
+				stash += collectGold;
+
+				if(collectGold != 0) write("Je hebt " + std::to_string(collectGold) + " goud gekregen van de gebouwen.\n");
+
 				fase = 2;
 				chosing_cards = false;
 			}
@@ -242,6 +260,10 @@ bool Player::Build(unsigned int buildingIndex)
 				stash -= neededGold;
 				buildings.push_back(std::move(cards.at(buildingIndex)));
 				buildingsBuild++;
+				if (buildings.size() >= 8)
+					if (game->FirstFinishes())
+						finish_points += 2;
+				
 				write("\"" + buildingName + "\" is gebouwd!\n.");
 				return true;
 			}
@@ -264,13 +286,160 @@ bool Player::Build(unsigned int buildingIndex)
 	return false;
 }
 
-void Player::Kill(std::string &name)
+void Player::Murder(std::string &name)
 {
-	
+	if (current_character->Order() == 1) {
+		if (!current_character->ActionPreformed()) {
+			if (game->Murder(name)) {
+				current_character->ActionPreformed(true);
+			}
+			else {
+				writeError("Helaas maar \'" + name + "\' word niet herkend. \nProbeer het nog eens.");
+			}
+		}
+		else {
+			writeError("Je hebt deze ronde al iemand vermoord, eentje lijkt me al veel...");
+		}
+	}
+	else {
+		writeError("Je kan alleen iemand vermoorden als je de moordenaar bent!");
+	}
+}
+
+void Player::Rob(std::string & name)
+{
+	if (current_character->Order() == 2) {
+		if (!current_character->ActionPreformed()) {
+			if (game->Rob(name)) {
+				current_character->ActionPreformed(true);
+			}
+			else {
+				writeError("Helaas maar \'" + name + "\' kan niet worden bestolen. \nProbeer het nog eens.");
+			}
+		}
+		else {
+			writeError("Je hebt deze ronde al iemand bestolen...");
+		}
+	}
+	else {
+		writeError("Je kan alleen iemand bestelen als je de dief bent!");
+	}
+}
+
+void Player::SwapCards(std::string &name)
+{
+	if (current_character->Order() == 3) {
+		if (!current_character->ActionPreformed()) {
+			if (name.compare("tegenstander") == 0) {
+				std::vector<std::unique_ptr<Card>> myCards = std::move(cards);
+				cards.clear();
+				std::vector<std::unique_ptr<Card>> thereCards = game->GetOpponent(client)->getCards();
+				cards.insert(cards.end(), thereCards.begin(), thereCards.end());
+				for (auto &card : myCards) {
+					game->GetOpponent(client)->addCard(std::move(card));
+				}
+				write("\x1b[36;1mJe hebt je kaarten met je tegenstander geruild!\x1b[30;40m\n");
+				PrintOverview();
+				game->GetOpponent(client)->write("\x1b[36;1mJe hebt je kaarten moeten ruilen met je tegenstander!\x1b[30;40m\n");
+				game->GetOpponent(client)->PrintOverview();
+				current_character->ActionPreformed(true);
+			}
+			else if (name.compare("voorraad") == 0) {
+				int card_amount = cards.size();
+				for (auto &card : cards)
+					game->DiscardCard(std::move(card));
+				
+				cards.clear();
+				for (int i = 0; i < card_amount; i++)
+					cards.push_back(game->DrawCard());
+
+				write("\x1b[36;1mJe hebt je kaarten met je voorraad geruild!\x1b[30;40m\n");
+				PrintOverview();
+				game->GetOpponent(client)->write("\x1b[36;1mJou tegenstander heeft zijn kaarten met de voorraad geruild!\x1b[30;40m\n");
+
+				current_character->ActionPreformed(true);
+			}
+			else {
+				writeError("Helaas maar \'" + name + "\' is geen optie(tegenstander of voorraad wel).");
+			}
+		}
+		else {
+			writeError("Je hebt deze ronde al kaarten geruild...");
+		}
+	}
+	else {
+		writeError("Je kan alleen kaarten ruilen als je de magier bent!");
+	}
+}
+
+void Player::TakeTwoCards()
+{
+	if (current_character->Order() == 7) {
+		if (!current_character->ActionPreformed()) {
+			cards.push_back(game->DrawCard());
+			cards.push_back(game->DrawCard());
+			write("Twee extra kaarten zijn getrokken!\n");
+			PrintOverview();
+			game->GetOpponent(client)->write("\x1b[36;1mJou tegenstander heeft twee extra kaarten getrokken!\x1b[30;40m\n");
+			current_character->ActionPreformed(true);
+		}
+		else {
+			writeError("Je hebt deze ronde al kaarten gepakt...");
+		}
+	}
+	else {
+		writeError("Je kan alleen extra kaarten pakken als je bouwemeester bent!");
+	}
 }
 
 void Player::Destroy(int index)
 {
+	if (current_character->Order() == 8) {
+		if (!current_character->ActionPreformed()) {
+			if (game->GetOpponent(client)->DestroyBuilding(index)) {
+				current_character->ActionPreformed(true);
+				write("Het gebouw is vernietigd!\n");
+				PrintOverview();
+				current_character->ActionPreformed(true);
+			}
+			else {
+				write("Dit gebouw kon niet worden vernietigd!\n");
+			}
+		}
+		else {
+			writeError("Je hebt deze ronde een gebouw vernietigd...");
+		}
+	}
+	else {
+		writeError("Je kan alleen gebouwen vernietigen als je condottiere bent!");
+	}
+}
+
+bool Player::DestroyBuilding(int index)
+{
+	if (index > 0 && index < buildings.size()) {
+		for (auto &character : character_cards) {
+			if (character->Order() == 5) {
+				game->GetOpponent(client)->write("Je tegenstander is beschermd door de condottiere.\n");
+				return false;
+			}
+		}
+
+		if (buildings.at(index)->MayBeDestroyed()) {
+			write("Het gebouw: " + buildings.at(index)->Name() + " is vernietigd door de condottiere.\n");
+			buildings.erase(buildings.begin() + index);
+			PrintOverview();
+			return true;
+		}
+		else {
+			game->GetOpponent(client)->write("Dit gebouw mag je niet vernietigen.\n");
+		}
+	}
+	else {
+		game->GetOpponent(client)->write("De gekozen index bestaat niet: " + std::to_string(index) + ".\n");
+	}
+
+	return false;
 }
 
 void Player::ResetTurn()

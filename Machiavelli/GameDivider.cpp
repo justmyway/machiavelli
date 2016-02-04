@@ -13,12 +13,11 @@ GameDivider::GameDivider()
 	help_commands.push_back("'kaart'				   Een kaart van de stapen kiezen.");
 	help_commands.push_back("'kies <nummer> <nummer>'  Indexen van de lijst te zien.");
 	help_commands.push_back("'bouw <nummer>'           Plaats een gebouw op het speelveld. De nummers corresponderen met nummers voor de handkaarten.");
-	//todo
 	help_commands.push_back("'vermoord <karakter>'     Karakter kan een van de volgende zijn: Dief, Magier, Koning, Prediker, Koopman, Bouwmeester of Condottiere."); 
 	help_commands.push_back("'besteel <karakter>'      Karakter kan een van de volgende zijn: Magier, Koning, Prediker, Koopman, Bouwmeester of Condottiere mist deze niet vermoord is)");
 	help_commands.push_back("'ruil <optie>'            Ruilt al jouw eigen kaarten met de tegenstander of de voorraad op het bord.");
 	help_commands.push_back("'vernietig <nummer>'      Vernietig een gebouw van de tegenstander. De nummers corresponderen met de nummers voor de gebouwen van de tegenstander.");
-	//done
+	help_commands.push_back("'kaarten'				   Neem 2 extra kaarten op handen.");
 	help_commands.push_back("'volgende'                De beurt word aan de volgende speler overgedragen.");
 	help_commands.push_back("'chat <tekst>'            Om te chatten typ chat gevolgd door hetgeen wat je wil zeggen");
 }

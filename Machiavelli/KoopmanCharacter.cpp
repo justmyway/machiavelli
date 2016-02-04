@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "KoopmanCharacter.h"
 #include "Player.h"
 
@@ -14,6 +13,7 @@ int KoopmanCharacter::CollectCash()
 		actionPreformed = true;
 		return ownedBy->BuildingsWithColor(Color()) + 1;
 	}
+	return 0;
 }
 
 KoopmanCharacter::~KoopmanCharacter()

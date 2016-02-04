@@ -34,7 +34,11 @@ public:
 	bool Killed() { return dead; };
 	void kill() { dead = true; }
 
+	std::shared_ptr<Player> Robed() { return robber; };
+	void Rob(std::shared_ptr<Player> player) { robber = player; };
+
 	bool ActionPreformed() { return actionPreformed; };
+	void ActionPreformed(bool action) { actionPreformed = action; };
 
 	int CollectCash() { return 0; };
 	int maxToBuildBuildings(int amount) { return amount; };
@@ -50,5 +54,6 @@ protected:
 	//Round
 	bool actionPreformed;
 	std::shared_ptr<Player> ownedBy;
+	std::shared_ptr<Player> robber;
 };
 

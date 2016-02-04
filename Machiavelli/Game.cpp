@@ -66,6 +66,7 @@ Game::Game() :
 
 	//game properties
 	started = false;
+	first_finishes = false;
 	GoldReserve = 30;
 
 	//shuffle cards
@@ -265,9 +266,14 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		current_player->ChoseCards(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
 		return true;
 	}
-	else if(current_player->Busy()) {
+	else if(current_player->Busy() && current_player == command->get_player()) {
 		current_player->writeError("Dit is nu niet van toepassing!");
 		current_player->writeError("Kies een kaart!");
+		return true;
+	}
+	
+	if(cmd.compare("overzicht") == 0) {
+		command->get_player()->PrintOverview();
 		return true;
 	}
 
@@ -281,12 +287,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		while (!CallNextCharacter())
 			;
 		return true;
-	}
-
-	if(cmd.compare("overzicht") == 0) {
-		current_player->PrintOverview();
-		return true;
-	}
+	}	
 
 	if (cmd.compare("innen") == 0) {
 		current_player->CollectCash();
@@ -300,6 +301,37 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	
 	if (cmd.compare("bouw") == 0) {
 		current_player->Build(std::stoi(command->get_cmd().substr(cmd.size(), command->get_cmd().size())));
+		return true;
+	}
+
+	if (cmd.compare("vermoord") == 0) {
+		current_player->Murder(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		return true;
+	}
+
+	if (cmd.compare("besteel") == 0) {
+		current_player->Rob(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		return true;
+	}
+
+	if (cmd.compare("ruil") == 0) {
+		current_player->SwapCards(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		return true;
+	}
+
+	if (cmd.compare("kaarten") == 0) {
+		current_player->TakeTwoCards();
+		return true;
+	}
+
+	if (cmd.compare("vernietig") == 0) {
+		std::stringstream stream(cmd);
+		std::string destroy_card;
+		int destroy_building_index;
+		stream >> destroy_card;
+		destroy_building_index = std::stoi(destroy_card);
+
+		current_player->Destroy(destroy_building_index);
 		return true;
 	}
 	
@@ -353,6 +385,10 @@ void Game::SetupRound()
 	discard_characterset.clear();
 
 	for (auto &character : characterset){
+		if (character->Order() == 4) {
+			if (character->HoldedBy() != nullptr)
+				start_player = character->HoldedBy();
+		}
 		character->RoundReset();
 		choseable_characterset.push_back(character);
 	}
@@ -366,6 +402,8 @@ void Game::SetupRound()
 		ClearScreen(player);
 		player->PrintOverview();
 	}
+	current_player = start_player;
+	RemoveFirstCard();
 }
 
 void Game::RemoveFirstCard()
@@ -501,9 +539,15 @@ bool Game::CallNextCharacter()
 {
 	order++;
 	if (order == 9) {
+		if (GameWon()) {
+			current_player = nullptr;
+			return true;
+		}
 		SetupRound();
-		return false;
+		return true;
 	}
+
+	if (order == 1) Write("\x1b[33;1mDe Koning is: " + start_player->get_name() + "\x1b[30;40m\n");
 
 	if (characterset.at(order - 1)->Killed()) {
 		return false;
@@ -526,6 +570,34 @@ void Game::CallCharacter()
 	Write("\x1b[33;1mKoning: \"Ik zou graag de " + characterset.at(order - 1)->Name() + " naar voren roepen!\"\x1b[30;40m\n");
 }
 
+bool Game::Murder(std::string & name)
+{
+	for (auto &character : characterset) {
+		if (character->Order() != 1 && character->Name().compare(name) == 0) {
+			character->kill();
+			Write("\x1b[36;1mWat een drama en bende, de " + name + " is vermoord!\x1b[30;40m\n");
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Game::Rob(std::string & name)
+{
+	for (auto &character : characterset) {
+		if (character->Order() > 2 && !character->Killed) {
+			if (character->Name().compare(name) == 0){
+				character->Rob(current_player);
+				Write("\x1b[36;1m" + current_player->get_name() + " beroofd de " + name + "!\x1b[30;40m\n");
+				return true;
+			}			
+		}
+	}
+
+	return false;
+}
+
 std::unique_ptr<Card> Game::DrawCard()
 {
 	if (deck.size() == 0) {
@@ -541,4 +613,29 @@ std::unique_ptr<Card> Game::DrawCard()
 void Game::DiscardCard(std::unique_ptr<Card> card)
 {
 	discard_deck.push_back(std::move(card));
+}
+
+bool Game::GameWon()
+{
+	bool won = false;
+
+	for (auto &player : players) {
+		if (player->Buildings() >= 8) won = true;
+	}
+
+	//todo calculate points
+	if (won) {
+
+	}
+
+	return won;
+}
+
+bool Game::FirstFinishes()
+{
+	if (!first_finishes) {
+		first_finishes = true;
+		return true;
+	}
+	return false;
 }
