@@ -586,7 +586,7 @@ bool Game::Murder(std::string & name)
 bool Game::Rob(std::string & name)
 {
 	for (auto &character : characterset) {
-		if (character->Order() > 2 && !character->Killed) {
+		if (character->Order() > 2 && !character->Killed()) {
 			if (character->Name().compare(name) == 0){
 				character->Rob(current_player);
 				Write("\x1b[36;1m" + current_player->get_name() + " beroofd de " + name + "!\x1b[30;40m\n");
