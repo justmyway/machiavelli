@@ -623,9 +623,20 @@ bool Game::GameWon()
 		if (player->Buildings() >= 8) won = true;
 	}
 
-	//todo calculate points
+	//todo calculate points & show winner
 	if (won) {
+		std::pair<std::shared_ptr<Player>, int> winning_player = std::pair<std::shared_ptr<Player>, int>();
 
+		for (auto &player : players) {
+			if (winning_player.first == nullptr) {
+				winning_player.first = player;
+				winning_player.second = player->CalculatePoints();
+				Write(player->get_name() + " heeft " + std::to_string(winning_player.second) + " punten gehaald! \n");
+			}
+			else {
+				int points = player->CalculatePoints();
+			}
+		}
 	}
 
 	return won;

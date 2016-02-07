@@ -40,7 +40,21 @@ void Player::writeError(std::string value)
 
 int Player::CalculatePoints()
 {
-	return 0;
+	if (buildings.size() >= 8) 
+		finish_points += 2;
+
+	std::vector<CardColor> card_colors = std::vector<CardColor>();
+
+	for (auto &building : buildings) {
+		finish_points += building->Points();
+		if (std::find(card_colors.begin(), card_colors.end(), building->Color()) == card_colors.end())
+			card_colors.push_back(building->Color());
+	}
+	
+	if (card_colors.size() >= 5)
+		finish_points += 3;
+
+	return finish_points;
 }
 
 void Player::PrintOverview()
