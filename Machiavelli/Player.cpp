@@ -334,7 +334,9 @@ void Player::SwapCards(std::string &name)
 				std::vector<std::unique_ptr<Card>> myCards = std::move(cards);
 				cards.clear();
 				std::vector<std::unique_ptr<Card>> thereCards = game->GetOpponent(client)->getCards();
-				cards.insert(cards.end(), thereCards.begin(), thereCards.end());
+				for (auto &card : thereCards) {
+					cards.push_back(std::move(card));
+				}
 				for (auto &card : myCards) {
 					game->GetOpponent(client)->addCard(std::move(card));
 				}

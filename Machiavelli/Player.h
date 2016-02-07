@@ -41,7 +41,7 @@ public:
 	void Deposit(int amount) { stash += amount; };
 	void addCharacter(std::shared_ptr<Character> character) { character_cards.push_back(character); };
 	void addCard(std::unique_ptr<Card> card) { cards.push_back(std::move(card)); };
-	std::vector<std::unique_ptr<Card>> getCards() { std::move(cards); cards.clear(); };
+	std::vector<std::unique_ptr<Card>> getCards() { return std::move(cards); };
 
 		//turn
 		void CallCaracter(std::shared_ptr<Character> character);
