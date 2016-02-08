@@ -28,9 +28,9 @@ std::string& operator+(std::string & lhs, const int rhs) {
 
 void Player::write(std::string value, bool start)
 {
-	*client << "\r" << value;
+	*client.get() << "\r" << value;
 	if (start)
-		*client << "\r\x1b[30;40mmachiavelli> ";
+		*client.get() << "\r\x1b[30;40mmachiavelli> ";
 }
 
 void Player::writeError(std::string value)

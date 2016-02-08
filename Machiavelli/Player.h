@@ -9,6 +9,7 @@
 #include <memory>
 
 class Socket;
+class Game;
 
 class Player {
 public:
