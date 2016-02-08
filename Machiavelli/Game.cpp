@@ -49,11 +49,11 @@ Game::Game() :
 	};
 
 	//fill character map
-	character_map["Bouwmeester"]	= BouwmeesterCharacter::Create("Bouwmeester", 7);
-	character_map["Condottiere"]	= CondottiereCharacter::Create("Condottiere", 8);
-	character_map["Koning"]			= KoningCharacter::Create("Koning", 4);
-	character_map["Koopman"]		= KoopmanCharacter::Create("Koopman", 6);
-	character_map["Prediker"]		= PredikerCharacter::Create("Prediker", 5);
+	character_map["Bouwmeester"] = BouwmeesterCharacter::Create("Bouwmeester", 7);
+	character_map["Condottiere"] = CondottiereCharacter::Create("Condottiere", 8);
+	character_map["Koning"] = KoningCharacter::Create("Koning", 4);
+	character_map["Koopman"] = KoopmanCharacter::Create("Koopman", 6);
+	character_map["Prediker"] = PredikerCharacter::Create("Prediker", 5);
 
 	//fill deck map
 	FillDeckMap();
@@ -114,7 +114,7 @@ void Game::PrepareCharacters()
 			std::shared_ptr<Character> character(std::move(it->second));
 			characterset.push_back(std::move(character));
 		}
-		else 
+		else
 		{
 			std::shared_ptr<Character> character(new StandardCharacter(name, order));
 			characterset.push_back(std::move(character));
@@ -124,7 +124,7 @@ void Game::PrepareCharacters()
 	//check
 	/*
 	for (auto const& i : characterset) {
-		std::cout << i->Name() << " - " << i->Color() << std::endl;
+	std::cout << i->Name() << " - " << i->Color() << std::endl;
 	};
 	std::cout << "All " << characterset.size() << " characters have been made. \n";
 	*/
@@ -164,7 +164,8 @@ void Game::PrepareCards()
 			}
 		}
 
-	}catch (const std::exception& ex) {
+	}
+	catch (const std::exception& ex) {
 		std::cerr << "***************************************\n";
 		std::cerr << ex.what();
 		std::cerr << "***************************************\n";
@@ -179,9 +180,9 @@ void Game::PrepareCards()
 
 bool Game::Particatate(std::shared_ptr<Player> player)
 {
-	if (players.size() > 1) 
+	if (players.size() > 1)
 		throw std::runtime_error("Trying to put more than 2 Players in a game. \r\n '" + player->get_name() + "' can't join!");
-	
+
 	players.push_back(player);
 
 	return players.size() == 2;
@@ -225,9 +226,9 @@ void Game::Start()
 bool Game::Execute(std::shared_ptr<ClientCommand> command)
 {
 	//command by one of these players?
-	if(std::find(players.begin(), players.end(), command->get_player()) == players.end())
+	if (std::find(players.begin(), players.end(), command->get_player()) == players.end())
 		return false;
-	
+
 	std::stringstream stream(command->get_cmd());
 	std::string cmd;
 	stream >> cmd;
@@ -261,18 +262,18 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		}
 		return true;
 	}
-	
+
 	if (cmd.compare("kies") == 0 && YourTurn(command) && current_player->Busy()) {
 		current_player->ChoseCards(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
 		return true;
 	}
-	else if(current_player->Busy() && current_player == command->get_player()) {
+	else if (current_player->Busy() && current_player == command->get_player()) {
 		current_player->writeError("Dit is nu niet van toepassing!");
 		current_player->writeError("Kies een kaart!");
 		return true;
 	}
-	
-	if(cmd.compare("overzicht") == 0) {
+
+	if (cmd.compare("overzicht") == 0) {
 		command->get_player()->PrintOverview();
 		return true;
 	}
@@ -287,7 +288,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		while (!CallNextCharacter())
 			;
 		return true;
-	}	
+	}
 
 	if (cmd.compare("innen") == 0) {
 		current_player->CollectCash();
@@ -298,7 +299,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		current_player->ChoseCards();
 		return true;
 	}
-	
+
 	if (cmd.compare("bouw") == 0) {
 		current_player->Build(std::stoi(command->get_cmd().substr(cmd.size(), command->get_cmd().size())));
 		return true;
@@ -334,7 +335,7 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 		current_player->Destroy(destroy_building_index);
 		return true;
 	}
-	
+
 	return true;
 }
 
@@ -384,7 +385,7 @@ void Game::SetupRound()
 	choseable_characterset.clear();
 	discard_characterset.clear();
 
-	for (auto &character : characterset){
+	for (auto &character : characterset) {
 		if (character->Order() == 4) {
 			if (character->HoldedBy() != nullptr)
 				start_player = character->HoldedBy();
@@ -395,7 +396,7 @@ void Game::SetupRound()
 
 	auto engine = std::default_random_engine{};
 	std::shuffle(choseable_characterset.begin(), choseable_characterset.end(), engine);
-	
+
 	order = 0;
 
 	for (auto& player : players) {
@@ -446,7 +447,8 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 			current_player->writeError("Dat number bestaat niet! Deze kaart kan je niet kiezen. \nProbeer het nogmaals.");
 			return;
 		}
-	}else{
+	}
+	else {
 		//next rounds
 		std::string losing_card;
 		int losing_card_index;
@@ -478,7 +480,7 @@ void Game::ChoseCards(std::shared_ptr<ClientCommand> command, std::string cmd)
 		NextPlayer();
 		current_player->write("Je kan een van de volgende kaarten kiezen en afleggen: \n");
 		PrintChosableCaracters();
-	}	
+	}
 }
 
 void Game::PickCard(int index)
@@ -587,11 +589,11 @@ bool Game::Rob(std::string & name)
 {
 	for (auto &character : characterset) {
 		if (character->Order() > 2 && !character->Killed()) {
-			if (character->Name().compare(name) == 0){
+			if (character->Name().compare(name) == 0) {
 				character->Rob(current_player);
 				Write("\x1b[36;1m" + current_player->get_name() + " beroofd de " + name + "!\x1b[30;40m\n");
 				return true;
-			}			
+			}
 		}
 	}
 
@@ -635,8 +637,17 @@ bool Game::GameWon()
 			}
 			else {
 				int points = player->CalculatePoints();
+				if (points > winning_player.second) {
+					winning_player.first = player;
+					winning_player.second = points;
+				}
+				Write(player->get_name() + " heeft " + std::to_string(winning_player.second) + " punten gehaald! \n");
 			}
 		}
+
+		Write("-----------------------------------------------------------\n");
+		Write(winning_player.first->get_name() + " heeft gewonnen met " + std::to_string(winning_player.second) + " punten!!!!!!!!!!!!!!!! \n");
+		Write("-----------------------------------------------------------\n");
 	}
 
 	return won;
