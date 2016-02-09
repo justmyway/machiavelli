@@ -3,6 +3,8 @@ Opzet game
 
 	Chat
 
+	Meerdere spellen spelen!!!
+
 Character eigenschappen
 	Vermoorden
 	Bestelen
