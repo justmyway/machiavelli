@@ -308,7 +308,7 @@ void Player::Murder(std::string &name)
 				current_character->ActionPreformed(true);
 			}
 			else {
-				writeError("Helaas maar \'" + name + "\' word niet herkend. \nProbeer het nog eens.");
+				writeError("Helaas maar \'" + name + "\' word niet herkend, Probeer het nog eens.");
 			}
 		}
 		else {
@@ -328,7 +328,7 @@ void Player::Rob(std::string & name)
 				current_character->ActionPreformed(true);
 			}
 			else {
-				writeError("Helaas maar \'" + name + "\' kan niet worden bestolen. \nProbeer het nog eens.");
+				writeError("Helaas maar \'" + name + "\' kan niet worden bestolen. Probeer het nog eens.");
 			}
 		}
 		else {

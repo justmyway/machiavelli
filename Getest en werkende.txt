@@ -1,0 +1,8 @@
+Opzet game
+	Spel opzetten
+
+	Chat
+
+Character eigenschappen
+	Vermoorden
+	Bestelen

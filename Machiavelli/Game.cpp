@@ -216,7 +216,7 @@ void Game::Start()
 	if (cheat_mode)	Write("\x1b[35;40m>> CHEATMODE << De kaarten worden al voor je gekozen\n\x1b[30;40m");
 	SetupRound();
 	if (cheat_mode) {
-		ChoseCards(nullptr, "1");
+		ChoseCards(nullptr, "0");
 		ChoseCards(nullptr, "1 0");
 		ChoseCards(nullptr, "0 1");
 		ChoseCards(nullptr, "0 1");
@@ -306,17 +306,17 @@ bool Game::Execute(std::shared_ptr<ClientCommand> command)
 	}
 
 	if (cmd.compare("vermoord") == 0) {
-		current_player->Murder(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		current_player->Murder(command->get_cmd().substr(cmd.size()+1, command->get_cmd().size()));
 		return true;
 	}
 
 	if (cmd.compare("besteel") == 0) {
-		current_player->Rob(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		current_player->Rob(command->get_cmd().substr(cmd.size()+1, command->get_cmd().size()));
 		return true;
 	}
 
 	if (cmd.compare("ruil") == 0) {
-		current_player->SwapCards(command->get_cmd().substr(cmd.size(), command->get_cmd().size()));
+		current_player->SwapCards(command->get_cmd().substr(cmd.size()+1, command->get_cmd().size()));
 		return true;
 	}
 
@@ -584,7 +584,9 @@ bool Game::Murder(std::string & name)
 
 bool Game::Rob(std::string & name)
 {
+	std::cout << name << std::endl;
 	for (auto &character : characterset) {
+		std::cout << character->Name() << " " << character->Order() << " " << character->Killed() << std::endl;
 		if (character->Order() > 2 && !character->Killed()) {
 			if (character->Name().compare(name) == 0) {
 				character->Rob(current_player);

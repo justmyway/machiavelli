@@ -68,7 +68,7 @@ void GameDivider::WriteToClient(std::shared_ptr<Socket> socket, const std::strin
 
 void GameDivider::WriteToClientInput(std::shared_ptr<Socket> socket)
 {
-	socket->write("\x1b[37;40mmachiavelli> ");
+	socket->write("\x1b[30;40mmachiavelli> ");
 }
 
 void GameDivider::JoinNewGame(std::shared_ptr<ClientCommand> command)
