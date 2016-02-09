@@ -198,6 +198,7 @@ void Game::Start()
 
 	//setup start
 	current_player = players.front();
+	start_player = players.front();
 
 	for (auto &player : players) {
 
@@ -212,9 +213,8 @@ void Game::Start()
 	}
 
 	//ready game
-	SetupRound();
 	if (cheat_mode)	Write("\x1b[35;40m>> CHEATMODE << De kaarten worden al voor je gekozen\n\x1b[30;40m");
-	RemoveFirstCard();
+	SetupRound();
 	if (cheat_mode) {
 		ChoseCards(nullptr, "1");
 		ChoseCards(nullptr, "1 0");
@@ -528,13 +528,10 @@ bool Game::YourTurn(std::shared_ptr<ClientCommand> command)
 
 std::shared_ptr<Player> Game::GetOpponent(std::shared_ptr<Socket> socket)
 {
-	std::cout << players.size() << std::endl;
-	if (players.at(0)->GetSocket() == socket) {
+	if (players.at(0)->GetSocket() == socket)
 		return players.at(1);
-	}
-	else {
-		return players.at(0);
-	}
+	
+	return players.at(0);
 }
 
 bool Game::CallNextCharacter()
