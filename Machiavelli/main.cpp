@@ -17,25 +17,31 @@ using namespace std;
 #include "Socket.h"
 #include "Sync_queue.h"
 #include "ClientCommand.h"
-#include "Player.hpp"
+#include "Player.h"
+#include "GameDivider.h"
 
 namespace machiavelli {
     const int tcp_port {1080};
     const string prompt {"machiavelli> "};
 }
 
-static Sync_queue<ClientCommand> queue;
+static Sync_queue<ClientCommand> customQueue;
 
 void consume_command() // runs in its own thread
 {
+	unique_ptr<GameDivider> games(new GameDivider);
+
     try {
         while (true) {
-			ClientCommand command {queue.get()}; // will block here unless there are still command objects in the queue
+			ClientCommand command {customQueue.get()}; // will block here unless there are still command objects in the queue
 			shared_ptr<Socket> client {command.get_client()};
 			shared_ptr<Player> player {command.get_player()};
 			try {
 				// TODO handle command here
-				*client << player->get_name() << ", you wrote: '" << command.get_cmd() << "', but I'll ignore that for now.\r\n" << machiavelli::prompt;
+				//*client << player->get_name() << ", you wrote: '" << command.get_cmd() << "', but I'll ignore that for now.\r\n" << machiavelli::prompt;
+				auto cmd = std::make_shared<ClientCommand>(command);
+				games->PassCommand(cmd);
+
 			} catch (const exception& ex) {
 				cerr << "*** exception in consumer thread for player " << player->get_name() << ": " << ex.what() << '\n';
 				if (client->is_open()) {
@@ -60,8 +66,12 @@ void handle_client(shared_ptr<Socket> client) // this function runs in a separat
 		client->write("What's your name?\r\n");
         client->write(machiavelli::prompt);
 		string name {client->readline()};
-		shared_ptr<Player> player {new Player {name}};
-		*client << "Welcome, " << name << ", have fun playing our game!\r\n" << machiavelli::prompt;
+		shared_ptr<Player> player {new Player {name, client}};
+		*client << "\x1b[33;1mWelcome, " << name << ", have fun playing our game!\x1b[30;40m\r\n" << machiavelli::prompt;
+		
+		//Asigning to a game
+		ClientCommand command{ "I would love to play a game!", client, player };
+		customQueue.put(command);
 
         while (true) { // game loop
             try {
@@ -75,7 +85,7 @@ void handle_client(shared_ptr<Socket> client) // this function runs in a separat
 				}
 
                 ClientCommand command {cmd, client, player};
-                queue.put(command);
+				customQueue.put(command);
 
             } catch (const exception& ex) {
 				cerr << "*** exception in client handler thread for player " << player->get_name() << ": " << ex.what() << '\n';

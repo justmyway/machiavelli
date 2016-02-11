@@ -13,6 +13,42 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\game">
+      <UniqueIdentifier>{a0417d2c-9381-486f-84f2-84660bc81bd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game">
+      <UniqueIdentifier>{f944e934-f6eb-4cf4-bf5b-783054022f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Card">
+      <UniqueIdentifier>{d26b45ef-c55e-4aaa-800a-d2abf1d5fc72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Card">
+      <UniqueIdentifier>{24221d81-53b7-4676-97b6-6db284dd57cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Character">
+      <UniqueIdentifier>{fb911b9b-2ed4-444f-a893-7c9bb7b2b309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Character">
+      <UniqueIdentifier>{4997c70a-5844-4e28-bc2a-52dd42517cd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{74421c61-ec48-424a-9b95-98a0f35cbbde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{d2c9c8b6-8acc-4eba-90ed-2750d7650a94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command">
+      <UniqueIdentifier>{538f9936-2125-4476-880d-7ee1045b23b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command">
+      <UniqueIdentifier>{bf3a9319-4574-4ebb-a58e-d196947e474a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command\commands">
+      <UniqueIdentifier>{26322c5f-39e3-4bb8-8d53-0555793fdd43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command\commands">
+      <UniqueIdentifier>{9920de46-f55b-4064-b9c3-45fe9dc9b05d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,12 +60,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClientCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -38,6 +68,93 @@
     </ClInclude>
     <ClInclude Include="throw.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Card.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="StandardCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="FileReader.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="StandardCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PredikerCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="KoopmanCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="KoningCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="CondottiereCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="BibliotheekCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="HofDerWonderenCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="KerkerCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="KerkhofCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="LaboratoriumCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="MagiersCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="ObservatoriumCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="PrestigieusGebouwCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="WerkplaatsCard.h">
+      <Filter>Header Files\Card</Filter>
+    </ClInclude>
+    <ClInclude Include="GameDivider.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="BouwmeesterCharacter.h">
+      <Filter>Header Files\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandHandler.h">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionCommand.h">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="RadialCommand.h">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="InnGold.h">
+      <Filter>Header Files\Command\commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -56,5 +173,85 @@
     <ClCompile Include="throw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Card.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="FileReader.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="CondottiereCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="KoningCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="KoopmanCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="PredikerCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="BibliotheekCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="HofDerWonderenCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="KerkerCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="KerkhofCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="LaboratoriumCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="MagiersCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="ObservatoriumCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="PrestigieusGebouwCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="WerkplaatsCard.cpp">
+      <Filter>Source Files\Card</Filter>
+    </ClCompile>
+    <ClCompile Include="GameDivider.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="BouwmeesterCharacter.cpp">
+      <Filter>Source Files\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandHandler.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionCommand.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="RadialCommand.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="InnGold.cpp">
+      <Filter>Source Files\Command\commands</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Machiavelli.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
