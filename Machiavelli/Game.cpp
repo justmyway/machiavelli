@@ -43,6 +43,7 @@ Game::Game() :
 		"vermoord",
 		"besteel",
 		"ruil",
+		"kaarten",
 		"vernietig",
 		"volgende",
 		"chat"

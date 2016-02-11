@@ -68,19 +68,20 @@ void Player::PrintOverview()
 	write("==========================================================\n", false);
 	write("Jij, de machtige \"" + name + "\" hebt:\n", false);
 	write("\x1b[33;1mGoud: " + std::to_string(stash) + "\x1b[30;40m\n", false);
-	if (character_cards.size() > 0) {
+	/*if (character_cards.size() > 0) {
 		write("Karakterkaarten: \n", false);
 		for (auto &caracter : character_cards)
 			write(caracter->Name() + " ", false);
 
 		write("\n", false);
-	}
+	}*/
 	write("Kaarten: " + std::to_string(cards.size()) + "\n", false);
-	if (PrintCards().size() == 0) {
+	std::vector<std::string> CardInfo = PrintCards();
+	if (CardInfo.size() == 0) {
 		write("   Jij hebt helaas geen kaarten meer.\n", false);
 	}
 	else {
-		for (auto &info : PrintCards())
+		for (auto &info : CardInfo)
 			write("   " + info + "\n", false);
 	}
 	write("Gebouwen: " + std::to_string(buildings.size()) + "\n", false);
@@ -117,8 +118,11 @@ std::vector<std::string> Player::PrintBuildings()
 {
 	std::vector<std::string> BuildingInfo;
 
+	int c = 0;
+
 	for (auto const& i : buildings) {
-		BuildingInfo.push_back(i->Name() + " (" + i->Color() + ", " + i->Cost() + ((i->Description().size() > 0) ? ", " + i->Description() : "" ) + "):");
+		BuildingInfo.push_back("[" + std::to_string(c) + "]" + i->Name() + " (" + i->Color() + ", " + i->Cost() + ((i->Description().size() > 0) ? ", " + i->Description() : "" ) + "):");
+		c++;
 	};
 
 	return BuildingInfo;
@@ -273,6 +277,7 @@ bool Player::Build(unsigned int buildingIndex)
 				std::string buildingName = cards.at(buildingIndex)->Name();
 				stash -= neededGold;
 				buildings.push_back(std::move(cards.at(buildingIndex)));
+				cards.erase(cards.begin() + buildingIndex);
 				buildingsBuild++;
 				if (buildings.size() >= 8)
 					if (game->FirstFinishes())

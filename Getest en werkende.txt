@@ -6,5 +6,7 @@ Opzet game
 	Meerdere spellen spelen!!!
 
 Character eigenschappen
-	Vermoorden
-	Bestelen
+
+
+
+

@@ -13,7 +13,7 @@ int KoopmanCharacter::CollectCash()
 		actionPreformed = true;
 		return ownedBy->BuildingsWithColor(Color()) + 1;
 	}
-	return 0;
+	return 1;
 }
 
 KoopmanCharacter::~KoopmanCharacter()
